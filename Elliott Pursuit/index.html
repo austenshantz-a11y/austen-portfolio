@@ -488,9 +488,7 @@
   auth.onAuthStateChanged(async (firebaseUser) => {
     hideLoading();
     if (firebaseUser) {
-      await loadUserProfile(firebaseUser.uid);
-      loadDashboard();
-      showScreen('screen-dashboard');
+      window.location.href = 'elliott-learning-game.html';
     } else {
       showScreen('screen-login');
     }

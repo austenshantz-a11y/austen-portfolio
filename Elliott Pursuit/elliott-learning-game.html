@@ -1,6 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <!-- Firebase auth guard: redirects to login if not signed in -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey:            "AIzaSyBvb0go501_N59ttU-4EKotgZcJV3akXQo",
+      authDomain:        "elliott-pursuit.firebaseapp.com",
+      projectId:         "elliott-pursuit",
+      storageBucket:     "elliott-pursuit.firebasestorage.app",
+      messagingSenderId: "928841948241",
+      appId:             "1:928841948241:web:1f379a883b87711beaec70"
+    });
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
