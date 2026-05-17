@@ -1,0 +1,1038 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- Firebase auth guard: redirects to login if not signed in -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script>
+    firebase.initializeApp({
+      apiKey:            "AIzaSyBvb0go501_N59ttU-4EKotgZcJV3akXQo",
+      authDomain:        "elliott-pursuit.firebaseapp.com",
+      projectId:         "elliott-pursuit",
+      storageBucket:     "elliott-pursuit.firebasestorage.app",
+      messagingSenderId: "928841948241",
+      appId:             "1:928841948241:web:1f379a883b87711beaec70"
+    });
+    firebase.auth().onAuthStateChanged(function(user) {
+      if (!user) {
+        window.location.href = 'index.html';
+      }
+    });
+  </script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Elliott's Game">
+<title>Elliott's Learning Game</title>
+<style>
+:root {
+  --animals: #22c55e;
+  --art: #ec4899;
+  --numbers: #3b82f6;
+  --stories: #eab308;
+  --world: #f97316;
+  --music: #a855f7;
+  --bg: #1a1a2e;
+  --card: #16213e;
+  --card2: #0f3460;
+  --text: #f0f0f0;
+  --muted: #94a3b8;
+  --radius: 18px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, 'Helvetica Neue', sans-serif; overflow: hidden; }
+body { display: flex; flex-direction: column; }
+
+/* SCREENS */
+.screen { display: none; flex-direction: column; height: 100%; overflow: hidden; }
+.screen.active { display: flex; }
+
+/* HEADER */
+.hdr { padding: 52px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
+.hdr h1 { font-size: 22px; font-weight: 800; flex: 1; }
+.hdr .back-btn { font-size: 28px; cursor: pointer; line-height: 1; }
+.scroll-body { flex: 1; overflow-y: auto; padding: 0 16px 100px; -webkit-overflow-scrolling: touch; }
+
+/* NAV */
+.nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid #ffffff18; display: flex; padding: 8px 0 28px; z-index: 100; }
+.nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; opacity: 0.45; transition: opacity 0.2s; }
+.nav-btn.active { opacity: 1; }
+.nav-btn .ni { font-size: 24px; }
+.nav-btn .nl { font-size: 10px; font-weight: 700; letter-spacing: 0.3px; }
+
+/* CARDS */
+.card { background: var(--card); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s; }
+.card:active { transform: scale(0.97); }
+.cat-card { display: flex; align-items: center; gap: 14px; }
+.cat-icon { font-size: 38px; line-height: 1; }
+.cat-info { flex: 1; }
+.cat-name { font-size: 17px; font-weight: 800; }
+.cat-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.cat-badge { font-size: 24px; }
+
+/* CATEGORY COLORS */
+.c-animals { border-left: 5px solid var(--animals); }
+.c-art { border-left: 5px solid var(--art); }
+.c-numbers { border-left: 5px solid var(--numbers); }
+.c-stories { border-left: 5px solid var(--stories); }
+.c-world { border-left: 5px solid var(--world); }
+.c-music { border-left: 5px solid var(--music); }
+
+/* BUTTONS */
+.btn { display: block; width: 100%; padding: 18px; border-radius: 14px; border: none; font-size: 17px; font-weight: 800; cursor: pointer; text-align: center; transition: transform 0.1s, opacity 0.1s; color: white; }
+.btn:active { transform: scale(0.96); }
+.btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
+.btn-green { background: var(--animals); }
+.btn-gray { background: #374151; }
+.btn + .btn { margin-top: 10px; }
+
+/* PIE SCREEN */
+.pie-wrap { display: flex; justify-content: center; margin: 8px 0 16px; }
+.pie-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
+.leg-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+.leg-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
+
+/* CALENDAR */
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
+.cal-hdr { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
+.cal-day-lbl { text-align: center; font-size: 10px; font-weight: 700; color: var(--muted); }
+.cal-day { aspect-ratio: 1; border-radius: 8px; background: var(--card2); display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--muted); flex-direction: column; gap: 1px; position: relative; cursor: default; }
+.cal-day.has-data { color: var(--text); background: #1e3a5f; }
+.cal-day.today { outline: 2px solid #6366f1; }
+.cal-day .mini-pie { display: flex; flex-wrap: wrap; gap: 1px; justify-content: center; align-items: center; margin-top: 2px; }
+.cal-day .mp { width: 5px; height: 5px; border-radius: 50%; }
+.cal-day.empty { background: transparent; }
+
+/* STAT CARDS */
+.stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.stat-card { background: var(--card); border-radius: 14px; padding: 16px; text-align: center; }
+.stat-num { font-size: 36px; font-weight: 900; }
+.stat-lbl { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 2px; }
+
+/* PIE TRACKER */
+.pie-tracker { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 16px; }
+.pie-chip { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.pie-chip.done { background: linear-gradient(135deg, #f59e0b, #f97316); }
+.pie-chip.empty { background: var(--card2); }
+
+/* QUIZ */
+.quiz-wrap { text-align: center; padding: 20px 0; }
+.quiz-cat { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
+.quiz-q { font-size: 22px; font-weight: 800; line-height: 1.3; margin-bottom: 10px; }
+.quiz-hint { font-size: 15px; color: var(--muted); margin-bottom: 24px; }
+.answer-reveal { background: var(--card2); border-radius: 14px; padding: 16px; margin: 0 0 24px; font-size: 20px; font-weight: 700; display: none; }
+.answer-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.btn-correct { background: var(--animals); }
+.btn-wrong { background: #ef4444; }
+
+/* FACT CARD */
+.fact-reveal { background: var(--card2); border-radius: 14px; padding: 18px; margin: 12px 0; font-size: 17px; line-height: 1.5; display: none; }
+.fact-reveal.show { display: block; }
+.fact-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
+
+/* CELEBRATION */
+.celebrate { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #00000088; z-index: 200; display: none; align-items: center; justify-content: center; flex-direction: column; }
+.celebrate.show { display: flex; }
+.celebrate-box { background: var(--card); border-radius: 24px; padding: 40px 30px; text-align: center; max-width: 320px; width: 90%; }
+.celebrate-emoji { font-size: 80px; margin-bottom: 16px; display: block; }
+.celebrate-title { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
+.celebrate-sub { font-size: 16px; color: var(--muted); margin-bottom: 24px; line-height: 1.4; }
+
+/* SECTION LABELS */
+.section-lbl { font-size: 13px; font-weight: 800; letter-spacing: 0.5px; color: var(--muted); text-transform: uppercase; margin: 16px 0 8px; }
+
+/* PROGRESS BAR */
+.prog-bar { height: 10px; background: var(--card2); border-radius: 10px; overflow: hidden; margin: 6px 0; }
+.prog-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
+
+/* HOME GREETING */
+.greeting { font-size: 28px; font-weight: 900; line-height: 1.2; margin-bottom: 4px; }
+.greeting-sub { font-size: 15px; color: var(--muted); margin-bottom: 20px; }
+
+.status-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--card2); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+
+.divider { height: 1px; background: #ffffff12; margin: 16px 0; }
+</style>
+</head>
+<body>
+
+<!-- HOME SCREEN -->
+<div id="screen-home" class="screen active">
+  <div class="hdr"><h1>🎓 Elliott's Game</h1></div>
+  <div class="scroll-body">
+    <p class="greeting" id="home-greeting">Good morning,<br>Elliott! 🌟</p>
+    <p class="greeting-sub" id="home-date"></p>
+    <div id="home-status"></div>
+    <div class="divider"></div>
+    <div class="section-lbl">Today</div>
+    <button class="btn btn-primary" onclick="goLearn()">⭐ Learn Today's Facts</button>
+    <button class="btn" style="background:#0f3460;" onclick="goQuiz()">🎯 Take Today's Quiz</button>
+    <div class="divider"></div>
+    <div class="section-lbl">More Fun</div>
+    <button class="btn btn-gray" onclick="goBigQuiz()">🔀 Big Random Quiz</button>
+    <div class="divider"></div>
+    <div class="section-lbl">My Progress</div>
+    <div id="home-pie-mini"></div>
+  </div>
+</div>
+
+<!-- LEARN SCREEN -->
+<div id="screen-learn" class="screen">
+  <div class="hdr">
+    <span class="back-btn" onclick="showScreen('home')">‹</span>
+    <h1>Today's Facts</h1>
+  </div>
+  <div class="scroll-body" id="learn-body"></div>
+</div>
+
+<!-- QUIZ SCREEN -->
+<div id="screen-quiz" class="screen">
+  <div class="hdr">
+    <span class="back-btn" onclick="confirmBack()">‹</span>
+    <h1 id="quiz-title">Today's Quiz</h1>
+  </div>
+  <div class="scroll-body">
+    <div id="quiz-progress-bar" style="margin-bottom:16px;">
+      <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--muted);font-weight:700;margin-bottom:4px;">
+        <span id="quiz-prog-text">Question 1 of 6</span>
+        <span id="quiz-score-text">⭐ 0</span>
+      </div>
+      <div class="prog-bar"><div class="prog-fill" id="quiz-prog-fill" style="width:0%;background:linear-gradient(90deg,#6366f1,#a855f7);"></div></div>
+    </div>
+    <div class="quiz-wrap" id="quiz-content"></div>
+    <div id="quiz-done" style="display:none;text-align:center;padding:20px 0;">
+      <div style="font-size:64px;margin-bottom:12px;" id="quiz-done-emoji">🎉</div>
+      <div style="font-size:24px;font-weight:900;margin-bottom:8px;" id="quiz-done-title"></div>
+      <div style="font-size:15px;color:var(--muted);margin-bottom:24px;line-height:1.4;" id="quiz-done-sub"></div>
+      <button class="btn btn-primary" onclick="showScreen('home')">Back Home</button>
+    </div>
+  </div>
+</div>
+
+<!-- PIE SCREEN -->
+<div id="screen-pie" class="screen">
+  <div class="hdr"><h1>🥧 My Pie</h1></div>
+  <div class="scroll-body">
+    <div class="section-lbl">Today's Pie</div>
+    <div class="pie-wrap"><canvas id="pie-canvas" width="280" height="280"></canvas></div>
+    <div class="pie-legend" id="pie-legend"></div>
+    <div class="divider"></div>
+    <div class="section-lbl">Pies Earned (Goal: 10 🎁)</div>
+    <div class="pie-tracker" id="pie-tracker"></div>
+    <div class="prog-bar" style="margin-bottom:4px;"><div class="prog-fill" id="pies-prog-fill" style="background:linear-gradient(90deg,#f59e0b,#f97316);width:0%;"></div></div>
+    <div style="font-size:13px;color:var(--muted);font-weight:700;text-align:right;" id="pies-prog-text">0 / 10 pies</div>
+    <div class="divider"></div>
+    <div class="section-lbl" id="cal-month-label">This Month</div>
+    <div class="cal-hdr">
+      <div class="cal-day-lbl">Su</div><div class="cal-day-lbl">Mo</div>
+      <div class="cal-day-lbl">Tu</div><div class="cal-day-lbl">We</div>
+      <div class="cal-day-lbl">Th</div><div class="cal-day-lbl">Fr</div>
+      <div class="cal-day-lbl">Sa</div>
+    </div>
+    <div class="cal-grid" id="cal-grid"></div>
+  </div>
+</div>
+
+<!-- STATS SCREEN -->
+<div id="screen-stats" class="screen">
+  <div class="hdr"><h1>📊 Stats</h1></div>
+  <div class="scroll-body">
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num" id="st-facts">0</div><div class="stat-lbl">Facts Learned</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-right">0</div><div class="stat-lbl">Questions Right</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num" id="st-pies">0</div><div class="stat-lbl">Full Pies Earned</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-streak">0</div><div class="stat-lbl">Day Streak 🔥</div></div>
+    </div>
+    <div class="stat-row">
+      <div class="stat-card"><div class="stat-num" id="st-pct">0%</div><div class="stat-lbl">Quiz Accuracy</div></div>
+      <div class="stat-card"><div class="stat-num" id="st-days">0</div><div class="stat-lbl">Days Played</div></div>
+    </div>
+    <div class="section-lbl">Best Categories</div>
+    <div id="cat-stats"></div>
+    <div class="divider"></div>
+    <div class="section-lbl">All Facts Learned</div>
+    <div id="all-facts-list"></div>
+    <div class="divider"></div>
+    <button class="btn btn-gray" style="font-size:13px;opacity:0.5;" onclick="if(confirm('Reset ALL game data? This cannot be undone!')){resetAll();}">⚠️ Reset All Data</button>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-btn active" id="nav-home" onclick="navTo('home')">
+    <span class="ni">🏠</span><span class="nl">Home</span>
+  </div>
+  <div class="nav-btn" id="nav-learn" onclick="navTo('learn-nav')">
+    <span class="ni">⭐</span><span class="nl">Learn</span>
+  </div>
+  <div class="nav-btn" id="nav-pie" onclick="navTo('pie')">
+    <span class="ni">🥧</span><span class="nl">My Pie</span>
+  </div>
+  <div class="nav-btn" id="nav-stats" onclick="navTo('stats')">
+    <span class="ni">📊</span><span class="nl">Stats</span>
+  </div>
+</nav>
+
+<!-- CELEBRATION -->
+<div class="celebrate" id="celebrate" onclick="closeCelebration()">
+  <div class="celebrate-box">
+    <span class="celebrate-emoji" id="cel-emoji">🎉</span>
+    <div class="celebrate-title" id="cel-title">Amazing!</div>
+    <div class="celebrate-sub" id="cel-sub"></div>
+    <button class="btn btn-primary" onclick="closeCelebration()">Yay! ✨</button>
+  </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════
+// FACTS DATABASE
+// ═══════════════════════════════════════
+const CATEGORIES = {
+  animals: { name: "Animals", emoji: "🦁", color: "#22c55e", desc: "The Animal Kingdom" },
+  art:     { name: "Colors & Art", emoji: "🎨", color: "#ec4899", desc: "Art & Creativity" },
+  numbers: { name: "Numbers & Shapes", emoji: "🔢", color: "#3b82f6", desc: "Math & Shapes" },
+  stories: { name: "Stories & Books", emoji: "📚", color: "#eab308", desc: "Books & Imagination" },
+  world:   { name: "The World", emoji: "🌍", color: "#f97316", desc: "Our Amazing Planet" },
+  music:   { name: "Music & Movement", emoji: "🎵", color: "#a855f7", desc: "Music & Dance" }
+};
+
+const FACTS = {
+  animals: [
+    { id:"a1", fact:"Butterflies taste with their feet! Their tiny feet can tell if a leaf is yummy enough to eat.", q:"What special body part do butterflies taste with?", a:"Their feet!" },
+    { id:"a2", fact:"Elephants are the biggest animals that live on land. Baby elephants can walk just a few hours after being born!", q:"What giant animal can its babies walk just hours after being born?", a:"Elephants!" },
+    { id:"a3", fact:"Dogs can smell things thousands of times better than people can. That's why police use dogs to find things!", q:"Which animal has a smell that is thousands of times better than humans?", a:"Dogs!" },
+    { id:"a4", fact:"Penguins can't fly, but they're amazing swimmers. They use their wings like flippers to zoom through the water!", q:"What bird uses its wings as flippers to swim instead of fly?", a:"Penguins!" },
+    { id:"a5", fact:"Flamingos are born white and turn pink from eating tiny little shrimp and algae!", q:"What color are baby flamingos when they are born?", a:"White!" },
+    { id:"a6", fact:"Bees do a special waggle dance to tell other bees exactly where to find flowers with yummy nectar.", q:"What special dance do bees do to tell their friends where flowers are?", a:"The waggle dance!" },
+    { id:"a7", fact:"Octopuses have eight arms AND three hearts! They even have blue blood.", q:"How many hearts does an octopus have?", a:"Three hearts!" },
+    { id:"a8", fact:"Giraffes have the same number of neck bones as humans — just 7! But each one is super long.", q:"How many bones are in a giraffe's neck?", a:"Seven — same as humans!" },
+    { id:"a9", fact:"Cats sleep about 12 to 16 hours every single day. No wonder they're always napping!", q:"How many hours a day do cats usually sleep?", a:"12 to 16 hours!" },
+    { id:"a10", fact:"Dolphins talk to each other using clicks and whistles. It's almost like their own secret language!", q:"How do dolphins talk to each other?", a:"With clicks and whistles!" },
+    { id:"a11", fact:"Cows have best friends! They feel sad when they're away from their friend.", q:"Do cows have best friends?", a:"Yes they do!" },
+    { id:"a12", fact:"A group of flamingos is called a flamboyance. That's a very fancy word!", q:"What is a group of flamingos called?", a:"A flamboyance!" },
+    { id:"a13", fact:"Snails can sleep for up to three years if the weather is too hot or too cold!", q:"How long can a snail sleep if the weather is bad?", a:"Up to three years!" },
+    { id:"a14", fact:"Sea otters hold hands when they sleep so they don't float away from each other.", q:"Why do sea otters hold hands when they sleep?", a:"So they don't float away!" },
+    { id:"a15", fact:"A group of owls is called a parliament. Parliament is also the name for where leaders meet to make rules!", q:"What is a group of owls called?", a:"A parliament!" },
+    { id:"a16", fact:"Polar bears have black skin under their white fur. Their fur is actually see-through!", q:"What color is a polar bear's skin under its white fur?", a:"Black!" },
+    { id:"a17", fact:"Starfish have no brain and no blood. Their tiny tube feet help them walk very slowly!", q:"Do starfish have a brain?", a:"No — they have no brain!" },
+    { id:"a18", fact:"Baby kangaroos are called joeys. When they're born, they're about as small as a jelly bean!", q:"What are baby kangaroos called?", a:"Joeys!" },
+  ],
+  art: [
+    { id:"ar1", fact:"Mixing red and blue makes purple! Red and yellow makes orange, and blue and yellow makes green.", q:"What color do you get when you mix red and blue?", a:"Purple!" },
+    { id:"ar2", fact:"The Mona Lisa is one of the most famous paintings ever. The lady in it has no eyebrows — and no one knows why!", q:"What is strange about the Mona Lisa painting?", a:"She has no eyebrows!" },
+    { id:"ar3", fact:"Rainbows always have 7 colors in the same order: red, orange, yellow, green, blue, indigo, and violet.", q:"How many colors are in a rainbow?", a:"Seven!" },
+    { id:"ar4", fact:"Crayons were invented over 100 years ago. The word crayon comes from a French word that means chalk!", q:"About how old is the crayon?", a:"Over 100 years old!" },
+    { id:"ar5", fact:"Cave people made paintings on cave walls thousands of years ago using berries and charcoal to make colors.", q:"What did cave people use to paint on cave walls?", a:"Berries and charcoal!" },
+    { id:"ar6", fact:"Sunflowers always face the sun! They slowly turn all day to follow where the sun goes across the sky.", q:"Which flower always faces the sun?", a:"Sunflowers!" },
+    { id:"ar7", fact:"Artists use primary colors — red, blue, and yellow — to mix almost every other color in the world.", q:"What are the three primary colors?", a:"Red, blue, and yellow!" },
+    { id:"ar8", fact:"The color red makes people feel excited and energized, while blue makes people feel calm and peaceful.", q:"Which color makes people feel calm and peaceful?", a:"Blue!" },
+    { id:"ar9", fact:"Origami is the Japanese art of folding paper into beautiful shapes like cranes and flowers, using no scissors or glue.", q:"What country does origami paper folding come from?", a:"Japan!" },
+    { id:"ar10", fact:"Sculptures are art you can walk around and touch. They can be made from clay, stone, wood, or even ice!", q:"What makes a sculpture different from a painting?", a:"You can walk around it and touch it!" },
+    { id:"ar11", fact:"The color wheel shows how colors relate to each other. Colors across from each other are called complementary colors.", q:"What are colors called that are across from each other on the color wheel?", a:"Complementary colors!" },
+    { id:"ar12", fact:"Pointillism is a way of making pictures using thousands of tiny dots. Up close it looks like dots, far away it looks like a scene!", q:"What is it called when a picture is made from thousands of tiny dots?", a:"Pointillism!" },
+    { id:"ar13", fact:"Vincent van Gogh painted 'Starry Night' while he was staying in a hospital. He painted over 900 pictures in just 10 years!", q:"What is the name of Van Gogh's famous painting with swirling stars?", a:"Starry Night!" },
+  ],
+  numbers: [
+    { id:"n1", fact:"A triangle has 3 sides, a square has 4 sides, a pentagon has 5 sides, and a hexagon has 6 sides.", q:"How many sides does a pentagon have?", a:"Five sides!" },
+    { id:"n2", fact:"Zero is a magical number — it means nothing, but without it we couldn't write big numbers like 10 or 100!", q:"What would be hard to write without the number zero?", a:"Big numbers like 10 and 100!" },
+    { id:"n3", fact:"A circle has no corners and no straight sides at all. It goes round and round forever!", q:"How many corners does a circle have?", a:"Zero — no corners at all!" },
+    { id:"n4", fact:"A dozen means exactly 12. If you have a dozen donuts, you have 12 donuts to share!", q:"How many is a dozen?", a:"Twelve!" },
+    { id:"n5", fact:"Counting by 2s gives you even numbers: 2, 4, 6, 8, 10... All of these are even numbers!", q:"What are numbers you count by 2s called?", a:"Even numbers!" },
+    { id:"n6", fact:"A clock uses numbers 1 through 12. When both hands point straight up, it's 12 o'clock — noon or midnight!", q:"What time is it when both clock hands point straight up?", a:"12 o'clock!" },
+    { id:"n7", fact:"An octagon has 8 sides. Stop signs are octagons! Count the sides next time you see one.", q:"How many sides does an octagon have?", a:"Eight sides!" },
+    { id:"n8", fact:"Half of something means splitting it into 2 equal pieces. Half of 10 is 5, and half of 4 is 2.", q:"What does it mean to take half of something?", a:"Split it into 2 equal pieces!" },
+    { id:"n9", fact:"The number 100 is made of ten groups of 10. A century is 100 years, and a dollar has 100 cents!", q:"How many cents are in one dollar?", a:"100 cents!" },
+    { id:"n10", fact:"A rectangle has 4 sides just like a square, but two of its sides are longer than the other two.", q:"How is a rectangle different from a square?", a:"Two sides are longer!" },
+    { id:"n11", fact:"Odd numbers always end in 1, 3, 5, 7, or 9. Even numbers always end in 0, 2, 4, 6, or 8.", q:"Do odd numbers end in even or odd digits?", a:"Odd digits: 1, 3, 5, 7, or 9!" },
+    { id:"n12", fact:"Pi (say it like pie, 🥧) is a special number that helps us figure out how big circles are. It's about 3.14.", q:"What special number helps measure circles?", a:"Pi — about 3.14!" },
+    { id:"n13", fact:"There are 60 seconds in a minute, 60 minutes in an hour, and 24 hours in a full day!", q:"How many minutes are in one hour?", a:"60 minutes!" },
+  ],
+  stories: [
+    { id:"st1", fact:"Dr. Seuss made up lots of silly words for his books, like Whos and Lorax and Sneetches — he invented them all!", q:"Who is the author who invented silly words like Whos and Lorax?", a:"Dr. Seuss!" },
+    { id:"st2", fact:"Fairy tales often start with 'Once upon a time' and end with 'happily ever after.' They're magical made-up stories.", q:"How do most fairy tales begin?", a:"Once upon a time!" },
+    { id:"st3", fact:"In 'The Very Hungry Caterpillar,' the caterpillar eats through 25 different foods before becoming a butterfly!", q:"What does the Very Hungry Caterpillar turn into at the end?", a:"A butterfly!" },
+    { id:"st4", fact:"Comic books tell stories using pictures AND words together. The words are usually inside speech bubbles!", q:"How do comic books tell their stories?", a:"With pictures and words in speech bubbles!" },
+    { id:"st5", fact:"Cinderella is one of the oldest fairy tales ever — people have been telling versions of it for over 2,000 years!", q:"About how old is the fairy tale Cinderella?", a:"Over 2,000 years old!" },
+    { id:"st6", fact:"Audiobooks are books you listen to instead of reading. You can enjoy a whole story while riding in the car!", q:"What is an audiobook?", a:"A book you listen to!" },
+    { id:"st7", fact:"Libraries are free! Anyone can go in and borrow books, then bring them back when they're done reading.", q:"Do you have to pay to borrow books from a library?", a:"No, libraries are free!" },
+    { id:"st8", fact:"The first printed books were made by hand, copying every single word. Printing presses made it much faster to make books!", q:"How were books made before printing presses?", a:"Written out by hand!" },
+    { id:"st9", fact:"Harry Potter has been translated into over 80 different languages so kids all around the world can read it.", q:"How many languages has Harry Potter been translated into?", a:"Over 80 languages!" },
+    { id:"st10", fact:"Aesop was a storyteller from ancient Greece. His fables, like 'The Tortoise and the Hare,' teach important life lessons.", q:"What do Aesop's fables always teach?", a:"Important life lessons!" },
+    { id:"st11", fact:"A chapter book is divided into sections called chapters. Each chapter usually ends on an exciting moment to make you want to read more!", q:"What are the sections of a chapter book called?", a:"Chapters!" },
+    { id:"st12", fact:"The word 'encyclopedia' comes from Greek and means 'circle of learning' — because encyclopedias teach about all kinds of things!", q:"What language does the word encyclopedia come from?", a:"Greek!" },
+  ],
+  world: [
+    { id:"w1", fact:"Earth is covered mostly by water — about 71% is ocean! That's why Earth looks blue from space.", q:"Why does Earth look mostly blue from outer space?", a:"Because most of it is ocean!" },
+    { id:"w2", fact:"The Amazon Rainforest in South America is home to more types of animals and plants than anywhere else on Earth.", q:"Where is the Amazon Rainforest?", a:"South America!" },
+    { id:"w3", fact:"There are 7 continents on Earth: North America, South America, Europe, Africa, Asia, Australia, and Antarctica.", q:"How many continents are there on Earth?", a:"Seven!" },
+    { id:"w4", fact:"Antarctica is the coldest place on Earth. It's covered in ice and is home to penguins, seals, and not much else!", q:"What is the coldest continent on Earth?", a:"Antarctica!" },
+    { id:"w5", fact:"Mount Everest is the tallest mountain in the world. It's so high that planes sometimes fly past its peak!", q:"What is the name of the tallest mountain in the world?", a:"Mount Everest!" },
+    { id:"w6", fact:"The Sahara Desert in Africa is the biggest hot desert in the world. It's almost as big as the entire United States!", q:"Where is the Sahara Desert?", a:"Africa!" },
+    { id:"w7", fact:"Japan is a country made up of thousands of islands out in the Pacific Ocean. Its capital city is Tokyo.", q:"What is the capital city of Japan?", a:"Tokyo!" },
+    { id:"w8", fact:"Volcanoes are mountains that can erupt and shoot out hot melted rock called lava from deep inside the Earth.", q:"What is the hot melted rock called that comes out of a volcano?", a:"Lava!" },
+    { id:"w9", fact:"The Great Barrier Reef in Australia is the world's biggest coral reef. It's so big you can see it from space!", q:"Where is the Great Barrier Reef?", a:"Australia!" },
+    { id:"w10", fact:"The Nile River in Africa is the longest river in the world. Ancient Egyptians built their civilization right along its banks.", q:"What is the longest river in the world?", a:"The Nile River!" },
+    { id:"w11", fact:"Deserts can be hot OR cold! Antarctica is the world's largest cold desert — even bigger than the Sahara.", q:"Can deserts be cold?", a:"Yes — Antarctica is a cold desert!" },
+    { id:"w12", fact:"The Northern Lights, called the Aurora Borealis, are colorful lights that dance in the sky in countries near the North Pole.", q:"What are the colorful lights that dance in the sky near the North Pole called?", a:"The Northern Lights — or Aurora Borealis!" },
+    { id:"w13", fact:"Over 7 billion people live on Earth! That's more than a thousand times the population of a big city.", q:"Roughly how many people live on planet Earth?", a:"Over 7 billion people!" },
+  ],
+  music: [
+    { id:"m1", fact:"There are 4 main families of instruments: strings (like violin), woodwinds (like flute), brass (like trumpet), and percussion (like drums).", q:"How many main families of musical instruments are there?", a:"Four — strings, woodwinds, brass, and percussion!" },
+    { id:"m2", fact:"Mozart started composing music when he was just 5 years old — the same age as you! He wrote over 600 pieces of music.", q:"How old was Mozart when he started composing music?", a:"Five years old — just like you!" },
+    { id:"m3", fact:"Ballet dancers who dance on their very tiptoes wear special shoes called pointe shoes to protect their feet.", q:"What are the special shoes that ballet dancers use to dance on their tiptoes called?", a:"Pointe shoes!" },
+    { id:"m4", fact:"When you clap your hands along to music, you're keeping the beat — the steady pulse that makes music feel good to move to!", q:"What is the steady pulse in music that you clap along to called?", a:"The beat!" },
+    { id:"m5", fact:"Singing is actually exercise! It's a workout for your lungs and the muscles in your throat.", q:"Is singing a form of exercise?", a:"Yes — it exercises your lungs and throat!" },
+    { id:"m6", fact:"The world's oldest known musical instrument is a flute made from a bird bone — it's over 40,000 years old!", q:"What is the oldest known musical instrument in the world?", a:"A bone flute!" },
+    { id:"m7", fact:"Drums are one of the very oldest instruments ever. Almost every culture in all of history has had some kind of drum.", q:"Are drums one of the oldest instruments in the world?", a:"Yes — one of the oldest!" },
+    { id:"m8", fact:"Musical notes have letter names: A, B, C, D, E, F, and G. After G, it goes back to A again!", q:"What are musical notes named after?", a:"The letters A through G!" },
+    { id:"m9", fact:"A lullaby is a soft, gentle song parents sing to help babies fall asleep. Most cultures around the world have lullabies.", q:"What is a lullaby?", a:"A soft song to help babies sleep!" },
+    { id:"m10", fact:"The piano has 88 keys. About half of them are white and the rest are black. Pressing a key makes a small hammer hit a string inside!", q:"How many keys does a piano have?", a:"88 keys!" },
+    { id:"m11", fact:"Music can change how we feel! Happy songs make us feel energetic, and slow songs can make us feel calm or even sad.", q:"Can music change how you feel?", a:"Yes — it can make you happy, calm, or even sad!" },
+    { id:"m12", fact:"An orchestra is a very large group of musicians playing together. The conductor waves a stick called a baton to lead them all.", q:"What does the conductor of an orchestra wave to lead the musicians?", a:"A baton!" },
+  ]
+};
+
+const CAT_KEYS = ["animals","art","numbers","stories","world","music"];
+</script>
+<script>
+// ═══════════════════════════════════════
+// STATE MANAGEMENT
+// ═══════════════════════════════════════
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+function loadState() {
+  try { return JSON.parse(localStorage.getItem('eg_state') || 'null'); } catch(e) { return null; }
+}
+function saveState(s) { localStorage.setItem('eg_state', JSON.stringify(s)); }
+
+function defaultState() {
+  return {
+    today: null,
+    stats: {
+      totalFactsLearned: 0,
+      totalQuestionsRight: 0,
+      totalQuestionsAsked: 0,
+      completedPies: 0,
+      daysPlayed: 0,
+      streak: 0,
+      lastPlayedDate: null,
+      currentPie: { animals:false, art:false, numbers:false, stories:false, world:false, music:false },
+      calendar: {},
+      usedFacts: [],
+      catStats: { animals:{right:0,asked:0}, art:{right:0,asked:0}, numbers:{right:0,asked:0}, stories:{right:0,asked:0}, world:{right:0,asked:0}, music:{right:0,asked:0} }
+    }
+  };
+}
+
+function defaultDayState(date, stats) {
+  // Pick one unused fact per category
+  const assigned = {};
+  for (const cat of CAT_KEYS) {
+    const pool = FACTS[cat].filter(f => !stats.usedFacts.includes(f.id));
+    const avail = pool.length > 0 ? pool : FACTS[cat]; // recycle if exhausted
+    assigned[cat] = avail[Math.floor(Math.random() * avail.length)].id;
+  }
+  // Record which pie pieces she already has at start of day
+  const startingPieces = CAT_KEYS.filter(k => stats.currentPie[k]);
+  return {
+    date,
+    assigned,
+    learned: {},       // cat -> true if she chose to learn it
+    quizResults: {},   // cat -> 'right'|'wrong'|null
+    startingPieces,    // can't earn these today
+    quizComplete: false
+  };
+}
+
+let STATE = loadState() || defaultState();
+
+function ensureToday() {
+  const today = todayStr();
+  if (!STATE.today || STATE.today.date !== today) {
+    // Finalize yesterday if needed
+    if (STATE.today && STATE.today.date !== today) {
+      finalizeDay(STATE.today);
+    }
+    STATE.today = defaultDayState(today, STATE.stats);
+    saveState(STATE);
+  }
+}
+
+function finalizeDay(day) {
+  // Already finalized? Skip
+  if (STATE.stats.calendar[day.date] && STATE.stats.calendar[day.date].finalized) return;
+  
+  const piecesEarned = CAT_KEYS.filter(cat =>
+    day.quizResults[cat] === 'right' && !day.startingPieces.includes(cat)
+  );
+  const factsLearned = CAT_KEYS.filter(cat => day.learned[cat]).length;
+  const questionsRight = CAT_KEYS.filter(cat => day.quizResults[cat] === 'right').length;
+  
+  STATE.stats.calendar[day.date] = {
+    piecesEarned,
+    factsLearned,
+    questionsRight,
+    finalized: true
+  };
+  
+  // Update streak
+  const lastDate = STATE.stats.lastPlayedDate;
+  if (lastDate) {
+    const last = new Date(lastDate + 'T12:00:00');
+    const curr = new Date(day.date + 'T12:00:00');
+    const diffDays = Math.round((curr - last) / 86400000);
+    if (diffDays === 1) STATE.stats.streak++;
+    else if (diffDays > 1) STATE.stats.streak = 1;
+  } else if (factsLearned > 0) {
+    STATE.stats.streak = 1;
+  }
+  if (factsLearned > 0) STATE.stats.lastPlayedDate = day.date;
+  
+  saveState(STATE);
+}
+
+function markLearned(cat) {
+  ensureToday();
+  if (STATE.today.learned[cat]) return;
+  STATE.today.learned[cat] = true;
+  // Track used fact
+  const fid = STATE.today.assigned[cat];
+  if (!STATE.stats.usedFacts.includes(fid)) {
+    STATE.stats.usedFacts.push(fid);
+    STATE.stats.totalFactsLearned++;
+  }
+  saveState(STATE);
+}
+
+function markQuizResult(cat, result, isBigQuiz) {
+  if (!isBigQuiz) {
+    STATE.today.quizResults[cat] = result;
+    STATE.stats.totalQuestionsAsked++;
+    STATE.stats.catStats[cat].asked++;
+    if (result === 'right') {
+      STATE.stats.totalQuestionsRight++;
+      STATE.stats.catStats[cat].right++;
+      // Award pie piece if she didn't start the day with it
+      if (!STATE.today.startingPieces.includes(cat) && !STATE.stats.currentPie[cat]) {
+        STATE.stats.currentPie[cat] = true;
+        // Check if pie is complete
+        if (CAT_KEYS.every(k => STATE.stats.currentPie[k])) {
+          STATE.stats.completedPies++;
+          CAT_KEYS.forEach(k => STATE.stats.currentPie[k] = false);
+          return 'pie_complete';
+        }
+        return 'piece_earned';
+      }
+    }
+  } else {
+    // Big quiz just tracks stats
+    if (result === 'right') {
+      STATE.stats.totalQuestionsRight++;
+      STATE.stats.catStats[cat].right++;
+    }
+    STATE.stats.totalQuestionsAsked++;
+    STATE.stats.catStats[cat].asked++;
+  }
+  saveState(STATE);
+  return null;
+}
+
+function resetAll() {
+  localStorage.removeItem('eg_state');
+  STATE = defaultState();
+  ensureToday();
+  renderHome();
+  showScreen('home');
+}
+</script>
+<script>
+// ═══════════════════════════════════════
+// NAVIGATION & SCREENS
+// ═══════════════════════════════════════
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-'+name).classList.add('active');
+  // Update nav
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  const navMap = { home:'nav-home', pie:'nav-pie', stats:'nav-stats' };
+  if (navMap[name]) document.getElementById(navMap[name]).classList.add('active');
+}
+
+function navTo(name) {
+  if (name === 'learn-nav') { goLearn(); return; }
+  if (name === 'pie') { renderPie(); showScreen('pie'); return; }
+  if (name === 'stats') { renderStats(); showScreen('stats'); return; }
+  renderHome(); showScreen('home');
+}
+
+function goLearn() {
+  renderLearn();
+  showScreen('learn');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-learn').classList.add('active');
+}
+
+function goQuiz(isBig) {
+  renderQuiz(isBig);
+  showScreen('quiz');
+}
+
+function goBigQuiz() {
+  goQuiz(true);
+}
+
+function confirmBack() {
+  if (confirm('Leave the quiz? Your progress will be saved.')) showScreen('home');
+}
+
+// ═══════════════════════════════════════
+// HOME SCREEN
+// ═══════════════════════════════════════
+function renderHome() {
+  ensureToday();
+  const day = STATE.today;
+  const stats = STATE.stats;
+  
+  // Greeting
+  const hour = new Date().getHours();
+  const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  document.getElementById('home-greeting').innerHTML = `${greet},<br>Elliott! 🌟`;
+  
+  const dateOpts = { weekday:'long', month:'long', day:'numeric' };
+  document.getElementById('home-date').textContent = new Date().toLocaleDateString('en-US', dateOpts);
+  
+  // Status
+  const learnedCount = CAT_KEYS.filter(c => day.learned[c]).length;
+  const quizzedCount = CAT_KEYS.filter(c => day.quizResults[c]).length;
+  const rightCount = CAT_KEYS.filter(c => day.quizResults[c]==='right').length;
+  
+  let statusHTML = '';
+  if (learnedCount === 0) {
+    statusHTML = `<div class="status-pill">📖 No facts learned yet today</div>`;
+  } else {
+    statusHTML = `<div class="status-pill" style="color:var(--animals);">✅ ${learnedCount} fact${learnedCount>1?'s':''} learned today</div>`;
+  }
+  if (quizzedCount > 0) {
+    statusHTML += ` <div class="status-pill" style="color:var(--numbers);">⭐ ${rightCount}/${quizzedCount} right in quiz</div>`;
+  }
+  document.getElementById('home-status').innerHTML = statusHTML;
+  
+  // Mini pie preview
+  const pieHTML = `
+    <div style="display:flex;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:14px 18px;margin-bottom:8px;">
+      <canvas id="mini-pie" width="60" height="60"></canvas>
+      <div>
+        <div style="font-weight:800;font-size:15px;">Current Pie</div>
+        <div style="font-size:13px;color:var(--muted);">${CAT_KEYS.filter(k=>stats.currentPie[k]).length} / 6 pieces</div>
+        <div style="font-size:13px;color:var(--muted);">${stats.completedPies} full pie${stats.completedPies!==1?'s':''} earned (goal: 10 🎁)</div>
+      </div>
+    </div>`;
+  document.getElementById('home-pie-mini').innerHTML = pieHTML;
+  setTimeout(() => drawPie('mini-pie', stats.currentPie, 30, 3), 50);
+}
+
+// ═══════════════════════════════════════
+// PIE DRAWING (SVG on Canvas)
+// ═══════════════════════════════════════
+function drawPie(canvasId, pieState, r, lineW) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const cx = canvas.width / 2, cy = canvas.height / 2;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  const slice = (Math.PI * 2) / 6;
+  const start = -Math.PI / 2; // top
+  
+  CAT_KEYS.forEach((cat, i) => {
+    const sa = start + i * slice;
+    const ea = sa + slice;
+    const color = CATEGORIES[cat].color;
+    const filled = pieState[cat];
+    
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, sa, ea);
+    ctx.closePath();
+    ctx.fillStyle = filled ? color : color + '33';
+    ctx.fill();
+    ctx.strokeStyle = '#1a1a2e';
+    ctx.lineWidth = lineW || 2;
+    ctx.stroke();
+  });
+  
+  // Center circle
+  ctx.beginPath();
+  ctx.arc(cx, cy, r * 0.28, 0, Math.PI*2);
+  ctx.fillStyle = '#1a1a2e';
+  ctx.fill();
+}
+
+// ═══════════════════════════════════════
+// LEARN SCREEN
+// ═══════════════════════════════════════
+function renderLearn() {
+  ensureToday();
+  const day = STATE.today;
+  let html = '';
+  
+  const learnedCount = CAT_KEYS.filter(c => day.learned[c]).length;
+  html += `<p style="font-size:14px;color:var(--muted);margin-bottom:16px;font-weight:600;">Tap a category to learn today's fact! (${learnedCount}/6 learned)</p>`;
+  
+  CAT_KEYS.forEach(cat => {
+    const catInfo = CATEGORIES[cat];
+    const fact = FACTS[cat].find(f => f.id === day.assigned[cat]);
+    const learned = day.learned[cat];
+    
+    html += `
+      <div class="card cat-card c-${cat}" onclick="toggleFact('${cat}')">
+        <div class="cat-icon">${catInfo.emoji}</div>
+        <div class="cat-info">
+          <div class="cat-name" style="color:${catInfo.color};">${catInfo.name}</div>
+          <div class="cat-sub">${catInfo.desc}</div>
+        </div>
+        <div class="cat-badge">${learned ? '✅' : '👆'}</div>
+      </div>
+      <div class="fact-reveal ${learned ? 'show' : ''}" id="fact-${cat}">
+        <div style="font-size:13px;font-weight:800;color:${catInfo.color};text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">${catInfo.emoji} ${catInfo.name}</div>
+        <div style="font-size:17px;line-height:1.55;">${fact ? fact.fact : ''}</div>
+        ${!learned ? `<div class="fact-actions">
+          <button class="btn" style="background:${catInfo.color};" onclick="event.stopPropagation();learnFact('${cat}')">⭐ I learned it!</button>
+          <button class="btn btn-gray" onclick="event.stopPropagation();toggleFact('${cat}')">Close</button>
+        </div>` : `<div style="margin-top:10px;font-size:14px;color:var(--muted);font-weight:600;">✅ Learned! Answer a quiz question later to earn your pie piece.</div>`}
+      </div>`;
+  });
+  
+  if (learnedCount > 0) {
+    html += `<div class="divider"></div><button class="btn btn-primary" onclick="goQuiz()">🎯 Go to Today's Quiz!</button>`;
+  }
+  
+  document.getElementById('learn-body').innerHTML = html;
+}
+
+function toggleFact(cat) {
+  const el = document.getElementById('fact-'+cat);
+  el.classList.toggle('show');
+}
+
+function learnFact(cat) {
+  markLearned(cat);
+  renderLearn();
+  // Mini celebrate
+  const catInfo = CATEGORIES[cat];
+  celebrate(`${catInfo.emoji} New Fact Learned!`, `Great job learning about ${catInfo.name}! Come back later for your quiz question.`);
+}
+</script>
+<script>
+// ═══════════════════════════════════════
+// QUIZ ENGINE
+// ═══════════════════════════════════════
+let quizQueue = [];
+let quizIdx = 0;
+let quizScore = 0;
+let quizTotal = 0;
+let quizIsBig = false;
+let quizAnswerShown = false;
+
+function renderQuiz(isBig) {
+  ensureToday();
+  quizIsBig = !!isBig;
+  quizIdx = 0;
+  quizScore = 0;
+  quizAnswerShown = false;
+
+  if (isBig) {
+    // Big quiz: all facts ever used, shuffled
+    const used = STATE.stats.usedFacts;
+    let pool = [];
+    CAT_KEYS.forEach(cat => {
+      FACTS[cat].forEach(f => {
+        if (used.includes(f.id)) pool.push({ ...f, cat });
+      });
+    });
+    // shuffle
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i+1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    quizQueue = pool.slice(0, Math.min(pool.length, 20));
+    document.getElementById('quiz-title').textContent = '🔀 Big Quiz';
+  } else {
+    // Daily quiz: only learned facts
+    const day = STATE.today;
+    quizQueue = CAT_KEYS
+      .filter(cat => day.learned[cat])
+      .map(cat => {
+        const f = FACTS[cat].find(f => f.id === day.assigned[cat]);
+        return { ...f, cat };
+      });
+    document.getElementById('quiz-title').textContent = "Today's Quiz";
+  }
+
+  quizTotal = quizQueue.length;
+  document.getElementById('quiz-done').style.display = 'none';
+  document.getElementById('quiz-content').style.display = '';
+
+  if (quizTotal === 0) {
+    document.getElementById('quiz-content').innerHTML = `
+      <div style="text-align:center;padding:40px 0;">
+        <div style="font-size:60px;margin-bottom:16px;">📖</div>
+        <div style="font-size:20px;font-weight:800;margin-bottom:8px;">No facts yet!</div>
+        <div style="font-size:15px;color:var(--muted);margin-bottom:24px;">Go learn some facts first, then come back for the quiz.</div>
+        <button class="btn btn-primary" onclick="goLearn()">⭐ Learn Facts</button>
+      </div>`;
+    document.getElementById('quiz-progress-bar').style.display = 'none';
+    return;
+  }
+  document.getElementById('quiz-progress-bar').style.display = '';
+  renderQuizQuestion();
+}
+
+function renderQuizQuestion() {
+  if (quizIdx >= quizTotal) {
+    finishQuiz(); return;
+  }
+  const item = quizQueue[quizIdx];
+  const catInfo = CATEGORIES[item.cat];
+
+  // Update progress bar
+  const pct = (quizIdx / quizTotal) * 100;
+  document.getElementById('quiz-prog-fill').style.width = pct + '%';
+  document.getElementById('quiz-prog-text').textContent = `Question ${quizIdx+1} of ${quizTotal}`;
+  document.getElementById('quiz-score-text').textContent = `⭐ ${quizScore}`;
+
+  // Already answered today?
+  const alreadyAnswered = !quizIsBig && STATE.today.quizResults[item.cat];
+
+  document.getElementById('quiz-content').innerHTML = `
+    <div class="quiz-cat" style="color:${catInfo.color};">${catInfo.emoji} ${catInfo.name}</div>
+    <div class="quiz-q">${item.q}</div>
+    <div class="quiz-hint" style="font-size:13px;color:var(--muted);">${item.fact.substring(0,60)}...</div>
+    <div class="answer-reveal" id="ans-reveal" style="${alreadyAnswered?'display:block;':''}">${item.a}</div>
+    ${alreadyAnswered
+      ? `<div style="font-size:14px;color:var(--muted);margin-bottom:16px;">Already answered: <strong style="color:${STATE.today.quizResults[item.cat]==='right'?'var(--animals)':'#ef4444'}">${STATE.today.quizResults[item.cat]==='right'?'✅ Correct':'❌ Incorrect'}</strong></div>
+         <button class="btn btn-gray" onclick="advanceQuiz()">Next →</button>`
+      : `<button class="btn btn-primary" id="reveal-btn" onclick="revealAnswer()" style="${quizAnswerShown?'display:none;':''}">Show Answer 👀</button>
+         <div class="answer-btns" id="ans-btns" style="${quizAnswerShown?'':'display:none;'}">
+           <button class="btn btn-correct" onclick="submitAnswer('right')">✅ Got it right!</button>
+           <button class="btn btn-wrong" onclick="submitAnswer('wrong')">❌ Not yet</button>
+         </div>`
+    }`;
+  quizAnswerShown = false;
+}
+
+function revealAnswer() {
+  document.getElementById('ans-reveal').style.display = 'block';
+  document.getElementById('reveal-btn').style.display = 'none';
+  document.getElementById('ans-btns').style.display = 'grid';
+  quizAnswerShown = true;
+}
+
+function submitAnswer(result) {
+  const item = quizQueue[quizIdx];
+  if (result === 'right') quizScore++;
+
+  const outcome = markQuizResult(item.cat, result, quizIsBig);
+  quizIdx++;
+
+  if (outcome === 'pie_complete') {
+    advanceQuiz();
+    setTimeout(() => celebrate('🥧 Full Pie Earned!!!',
+      `Amazing, Elliott! You filled the whole pie! You've now earned ${STATE.stats.completedPies} pie${STATE.stats.completedPies!==1?'s':''}. ${STATE.stats.completedPies>=10?'YOU EARNED A PRESENT! 🎁':'Get to 10 for a present! 🎁'}`), 300);
+  } else if (outcome === 'piece_earned') {
+    advanceQuiz();
+    const catInfo = CATEGORIES[item.cat];
+    setTimeout(() => celebrate(`${catInfo.emoji} Pie Piece Earned!`,
+      `You earned the ${catInfo.name} piece for your pie! Keep going!`), 200);
+  } else {
+    advanceQuiz();
+  }
+}
+
+function advanceQuiz() {
+  saveState(STATE);
+  renderQuizQuestion();
+}
+
+function finishQuiz() {
+  document.getElementById('quiz-content').style.display = 'none';
+  document.getElementById('quiz-prog-fill').style.width = '100%';
+  document.getElementById('quiz-score-text').textContent = `⭐ ${quizScore}`;
+
+  const pct = quizTotal > 0 ? Math.round((quizScore/quizTotal)*100) : 0;
+  let emoji = pct === 100 ? '🏆' : pct >= 70 ? '🌟' : pct >= 40 ? '😊' : '💪';
+  let title = pct === 100 ? 'Perfect Score!!' : pct >= 70 ? 'Great Job!' : pct >= 40 ? 'Good Try!' : 'Keep Practicing!';
+  let sub = `You got ${quizScore} out of ${quizTotal} right (${pct}%)!`;
+  if (!quizIsBig) {
+    const pieces = CAT_KEYS.filter(c => STATE.today.quizResults[c]==='right' && !STATE.today.startingPieces.includes(c));
+    if (pieces.length > 0) sub += ` You earned ${pieces.length} new pie piece${pieces.length>1?'s':''}! 🥧`;
+  }
+
+  document.getElementById('quiz-done-emoji').textContent = emoji;
+  document.getElementById('quiz-done-title').textContent = title;
+  document.getElementById('quiz-done-sub').textContent = sub;
+  document.getElementById('quiz-done').style.display = 'block';
+  saveState(STATE);
+}
+</script>
+<script>
+// ═══════════════════════════════════════
+// PIE SCREEN
+// ═══════════════════════════════════════
+function renderPie() {
+  ensureToday();
+  const stats = STATE.stats;
+
+  // Draw big pie
+  setTimeout(() => drawPie('pie-canvas', stats.currentPie, 120, 4), 50);
+
+  // Legend
+  let legHTML = '';
+  CAT_KEYS.forEach(cat => {
+    const catInfo = CATEGORIES[cat];
+    const has = stats.currentPie[cat];
+    legHTML += `
+      <div class="leg-item">
+        <div class="leg-dot" style="background:${has ? catInfo.color : catInfo.color+'44'};${has?'':'border:2px solid '+catInfo.color+'66;'}"></div>
+        <span style="${has?'':'color:var(--muted);'}">${catInfo.emoji} ${catInfo.name}</span>
+        ${has ? '<span style="color:var(--animals);">✓</span>' : ''}
+      </div>`;
+  });
+  document.getElementById('pie-legend').innerHTML = legHTML;
+
+  // Pie tracker (10 pies)
+  let trackerHTML = '';
+  for (let i = 0; i < 10; i++) {
+    const done = i < stats.completedPies;
+    trackerHTML += `<div class="pie-chip ${done?'done':'empty'}">${done?'🥧':'○'}</div>`;
+  }
+  document.getElementById('pie-tracker').innerHTML = trackerHTML;
+
+  const pct = Math.min(100, (stats.completedPies / 10) * 100);
+  document.getElementById('pies-prog-fill').style.width = pct + '%';
+  document.getElementById('pies-prog-text').textContent = `${stats.completedPies} / 10 pies`;
+
+  // Calendar
+  renderCalendar();
+}
+
+function renderCalendar() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = now.getMonth();
+  const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  document.getElementById('cal-month-label').textContent = `${monthNames[month]} ${year}`;
+
+  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const daysInMonth = new Date(year, month+1, 0).getDate();
+  const todayD = now.getDate();
+
+  let html = '';
+  // Empty cells for days before month start
+  for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const calDay = STATE.stats.calendar[dateStr];
+    const isToday = d === todayD;
+
+    if (calDay && calDay.piecesEarned && calDay.piecesEarned.length > 0) {
+      const dots = calDay.piecesEarned.map(cat =>
+        `<div class="mp" style="background:${CATEGORIES[cat].color};"></div>`).join('');
+      html += `<div class="cal-day has-data${isToday?' today':''}">
+        <span>${d}</span><div class="mini-pie">${dots}</div></div>`;
+    } else if (calDay) {
+      html += `<div class="cal-day has-data${isToday?' today':''}" title="No pieces earned">${d}</div>`;
+    } else {
+      html += `<div class="cal-day${isToday?' today':''}">${d}</div>`;
+    }
+  }
+  document.getElementById('cal-grid').innerHTML = html;
+}
+
+// ═══════════════════════════════════════
+// STATS SCREEN
+// ═══════════════════════════════════════
+function renderStats() {
+  ensureToday();
+  const stats = STATE.stats;
+  const total = stats.totalQuestionsAsked;
+  const pct = total > 0 ? Math.round((stats.totalQuestionsRight / total) * 100) : 0;
+
+  document.getElementById('st-facts').textContent = stats.totalFactsLearned;
+  document.getElementById('st-right').textContent = stats.totalQuestionsRight;
+  document.getElementById('st-pies').textContent = stats.completedPies;
+  document.getElementById('st-streak').textContent = stats.streak;
+  document.getElementById('st-pct').textContent = pct + '%';
+  document.getElementById('st-days').textContent = Object.keys(stats.calendar).length + (STATE.today && STATE.today.learned && CAT_KEYS.some(c => STATE.today.learned[c]) ? 1 : 0);
+
+  // Category stats
+  let catHTML = '';
+  const sorted = [...CAT_KEYS].sort((a,b) => {
+    const pa = stats.catStats[a].asked > 0 ? stats.catStats[a].right/stats.catStats[a].asked : 0;
+    const pb = stats.catStats[b].asked > 0 ? stats.catStats[b].right/stats.catStats[b].asked : 0;
+    return pb - pa;
+  });
+  sorted.forEach(cat => {
+    const s = stats.catStats[cat];
+    const catInfo = CATEGORIES[cat];
+    const pct = s.asked > 0 ? Math.round((s.right/s.asked)*100) : 0;
+    catHTML += `
+      <div style="margin-bottom:10px;">
+        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:4px;">
+          <span>${catInfo.emoji} ${catInfo.name}</span>
+          <span style="color:${catInfo.color};">${s.right}/${s.asked} (${pct}%)</span>
+        </div>
+        <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${catInfo.color};"></div></div>
+      </div>`;
+  });
+  document.getElementById('cat-stats').innerHTML = catHTML || '<div style="color:var(--muted);font-size:14px;">No quiz data yet!</div>';
+
+  // All learned facts list
+  const usedIds = stats.usedFacts;
+  let factList = '';
+  if (usedIds.length === 0) {
+    factList = '<div style="color:var(--muted);font-size:14px;">No facts learned yet — go learn some!</div>';
+  } else {
+    CAT_KEYS.forEach(cat => {
+      const catFacts = FACTS[cat].filter(f => usedIds.includes(f.id));
+      if (catFacts.length === 0) return;
+      const catInfo = CATEGORIES[cat];
+      factList += `<div style="font-size:13px;font-weight:800;color:${catInfo.color};text-transform:uppercase;margin:12px 0 6px;">${catInfo.emoji} ${catInfo.name}</div>`;
+      catFacts.forEach(f => {
+        factList += `<div style="background:var(--card);border-radius:10px;padding:10px 14px;margin-bottom:6px;font-size:13px;line-height:1.4;">${f.fact}</div>`;
+      });
+    });
+  }
+  document.getElementById('all-facts-list').innerHTML = factList;
+}
+
+// ═══════════════════════════════════════
+// CELEBRATION OVERLAY
+// ═══════════════════════════════════════
+function celebrate(title, sub, emoji) {
+  document.getElementById('cel-emoji').textContent = emoji || '🎉';
+  document.getElementById('cel-title').textContent = title;
+  document.getElementById('cel-sub').textContent = sub;
+  document.getElementById('celebrate').classList.add('show');
+}
+function closeCelebration() {
+  document.getElementById('celebrate').classList.remove('show');
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  ensureToday();
+  renderHome();
+});
+</script>
+</body>
+</html>
