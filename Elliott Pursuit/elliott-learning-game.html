@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Firebase auth guard: redirects to login if not signed in -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
   <script>
     firebase.initializeApp({
       apiKey:            "AIzaSyBvb0go501_N59ttU-4EKotgZcJV3akXQo",
@@ -12,11 +12,6 @@
       storageBucket:     "elliott-pursuit.firebasestorage.app",
       messagingSenderId: "928841948241",
       appId:             "1:928841948241:web:1f379a883b87711beaec70"
-    });
-    firebase.auth().onAuthStateChanged(function(user) {
-      if (!user) {
-        window.location.href = 'index.html';
-      }
     });
   </script>
 <meta charset="UTF-8">
@@ -44,24 +39,20 @@
 html, body { height: 100%; background: var(--bg); color: var(--text); font-family: -apple-system, 'Helvetica Neue', sans-serif; overflow: hidden; }
 body { display: flex; flex-direction: column; }
 
-/* SCREENS */
 .screen { display: none; flex-direction: column; height: 100%; overflow: hidden; }
 .screen.active { display: flex; }
 
-/* HEADER */
 .hdr { padding: 52px 20px 14px; display: flex; align-items: center; gap: 12px; flex-shrink: 0; }
 .hdr h1 { font-size: 22px; font-weight: 800; flex: 1; }
 .hdr .back-btn { font-size: 28px; cursor: pointer; line-height: 1; }
 .scroll-body { flex: 1; overflow-y: auto; padding: 0 16px 100px; -webkit-overflow-scrolling: touch; }
 
-/* NAV */
 .nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--card); border-top: 1px solid #ffffff18; display: flex; padding: 8px 0 28px; z-index: 100; }
 .nav-btn { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; cursor: pointer; opacity: 0.45; transition: opacity 0.2s; }
 .nav-btn.active { opacity: 1; }
 .nav-btn .ni { font-size: 24px; }
 .nav-btn .nl { font-size: 10px; font-weight: 700; letter-spacing: 0.3px; }
 
-/* CARDS */
 .card { background: var(--card); border-radius: var(--radius); padding: 18px; margin-bottom: 12px; cursor: pointer; transition: transform 0.1s; }
 .card:active { transform: scale(0.97); }
 .cat-card { display: flex; align-items: center; gap: 14px; }
@@ -71,7 +62,6 @@ body { display: flex; flex-direction: column; }
 .cat-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
 .cat-badge { font-size: 24px; }
 
-/* CATEGORY COLORS */
 .c-animals { border-left: 5px solid var(--animals); }
 .c-art { border-left: 5px solid var(--art); }
 .c-numbers { border-left: 5px solid var(--numbers); }
@@ -79,7 +69,6 @@ body { display: flex; flex-direction: column; }
 .c-world { border-left: 5px solid var(--world); }
 .c-music { border-left: 5px solid var(--music); }
 
-/* BUTTONS */
 .btn { display: block; width: 100%; padding: 18px; border-radius: 14px; border: none; font-size: 17px; font-weight: 800; cursor: pointer; text-align: center; transition: transform 0.1s, opacity 0.1s; color: white; }
 .btn:active { transform: scale(0.96); }
 .btn-primary { background: linear-gradient(135deg, #6366f1, #8b5cf6); }
@@ -87,13 +76,11 @@ body { display: flex; flex-direction: column; }
 .btn-gray { background: #374151; }
 .btn + .btn { margin-top: 10px; }
 
-/* PIE SCREEN */
 .pie-wrap { display: flex; justify-content: center; margin: 8px 0 16px; }
 .pie-legend { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 12px; }
 .leg-item { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
 .leg-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
 
-/* CALENDAR */
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 8px; }
 .cal-hdr { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-bottom: 4px; }
 .cal-day-lbl { text-align: center; font-size: 10px; font-weight: 700; color: var(--muted); }
@@ -104,19 +91,16 @@ body { display: flex; flex-direction: column; }
 .cal-day .mp { width: 5px; height: 5px; border-radius: 50%; }
 .cal-day.empty { background: transparent; }
 
-/* STAT CARDS */
 .stat-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
 .stat-card { background: var(--card); border-radius: 14px; padding: 16px; text-align: center; }
 .stat-num { font-size: 36px; font-weight: 900; }
 .stat-lbl { font-size: 12px; color: var(--muted); font-weight: 600; margin-top: 2px; }
 
-/* PIE TRACKER */
 .pie-tracker { display: flex; flex-wrap: wrap; gap: 8px; margin: 8px 0 16px; }
 .pie-chip { width: 46px; height: 46px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 .pie-chip.done { background: linear-gradient(135deg, #f59e0b, #f97316); }
 .pie-chip.empty { background: var(--card2); }
 
-/* QUIZ */
 .quiz-wrap { text-align: center; padding: 20px 0; }
 .quiz-cat { font-size: 14px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 8px; }
 .quiz-q { font-size: 22px; font-weight: 800; line-height: 1.3; margin-bottom: 10px; }
@@ -126,12 +110,10 @@ body { display: flex; flex-direction: column; }
 .btn-correct { background: var(--animals); }
 .btn-wrong { background: #ef4444; }
 
-/* FACT CARD */
 .fact-reveal { background: var(--card2); border-radius: 14px; padding: 18px; margin: 12px 0; font-size: 17px; line-height: 1.5; display: none; }
 .fact-reveal.show { display: block; }
 .fact-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 12px; }
 
-/* CELEBRATION */
 .celebrate { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #00000088; z-index: 200; display: none; align-items: center; justify-content: center; flex-direction: column; }
 .celebrate.show { display: flex; }
 .celebrate-box { background: var(--card); border-radius: 24px; padding: 40px 30px; text-align: center; max-width: 320px; width: 90%; }
@@ -139,29 +121,71 @@ body { display: flex; flex-direction: column; }
 .celebrate-title { font-size: 28px; font-weight: 900; margin-bottom: 8px; }
 .celebrate-sub { font-size: 16px; color: var(--muted); margin-bottom: 24px; line-height: 1.4; }
 
-/* SECTION LABELS */
 .section-lbl { font-size: 13px; font-weight: 800; letter-spacing: 0.5px; color: var(--muted); text-transform: uppercase; margin: 16px 0 8px; }
 
-/* PROGRESS BAR */
 .prog-bar { height: 10px; background: var(--card2); border-radius: 10px; overflow: hidden; margin: 6px 0; }
 .prog-fill { height: 100%; border-radius: 10px; transition: width 0.5s ease; }
 
-/* HOME GREETING */
 .greeting { font-size: 28px; font-weight: 900; line-height: 1.2; margin-bottom: 4px; }
 .greeting-sub { font-size: 15px; color: var(--muted); margin-bottom: 20px; }
-
 .status-pill { display: inline-flex; align-items: center; gap: 6px; background: var(--card2); border-radius: 20px; padding: 6px 14px; font-size: 13px; font-weight: 700; margin-bottom: 8px; }
-
 .divider { height: 1px; background: #ffffff12; margin: 16px 0; }
+
+/* RELEASE NOTES MODAL */
+.rn-overlay { position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: #00000090; z-index: 300; display: none; align-items: flex-end; justify-content: center; }
+.rn-overlay.show { display: flex; }
+.rn-sheet { background: var(--card); border-radius: 24px 24px 0 0; padding: 24px 20px 48px; width: 100%; max-height: 85vh; overflow-y: auto; }
+.rn-handle { width: 40px; height: 4px; background: #ffffff30; border-radius: 2px; margin: 0 auto 20px; }
+.rn-title { font-size: 22px; font-weight: 900; margin-bottom: 20px; }
+.rn-version { margin-bottom: 24px; }
+.rn-ver-badge { display: inline-block; background: linear-gradient(135deg,#6366f1,#8b5cf6); border-radius: 8px; padding: 3px 10px; font-size: 12px; font-weight: 800; letter-spacing: 0.5px; margin-bottom: 6px; }
+.rn-ver-date { font-size: 12px; color: var(--muted); font-weight: 600; margin-left: 8px; }
+.rn-ver-title { font-size: 16px; font-weight: 800; margin-bottom: 8px; }
+.rn-item { display: flex; gap: 10px; font-size: 14px; line-height: 1.45; margin-bottom: 7px; color: #d0d8e8; }
+.rn-item::before { content: '•'; color: #6366f1; font-weight: 900; flex-shrink: 0; }
+
+/* LOADING SCREEN */
+.loading-center { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 20px; }
+.spinner { width: 56px; height: 56px; border: 5px solid #ffffff22; border-top-color: #6366f1; border-radius: 50%; animation: spin 0.9s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* CHILD SELECT SCREEN */
+.child-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 8px 0 20px; }
+.child-card { background: var(--card); border-radius: var(--radius); padding: 24px 12px; text-align: center; cursor: pointer; transition: transform 0.15s; border: 2px solid transparent; }
+.child-card:active { transform: scale(0.96); border-color: #6366f1; }
+.child-card .cc-emoji { font-size: 52px; margin-bottom: 10px; }
+.child-card .cc-name { font-size: 18px; font-weight: 800; }
+.child-card .cc-grade { font-size: 13px; color: var(--muted); margin-top: 4px; }
+
+/* GRADE BADGE */
+.grade-badge { display: inline-flex; align-items: center; gap: 8px; background: linear-gradient(135deg,#6366f1,#8b5cf6); border-radius: 20px; padding: 6px 16px; font-size: 13px; font-weight: 800; margin-bottom: 12px; }
 </style>
 </head>
 <body>
 
-<!-- HOME SCREEN -->
-<div id="screen-home" class="screen active">
-  <div class="hdr"><h1>🎓 Elliott's Game</h1></div>
+<!-- LOADING SCREEN -->
+<div id="screen-loading" class="screen active">
+  <div class="loading-center">
+    <div style="font-size:52px;margin-bottom:8px;">🎓</div>
+    <div class="spinner"></div>
+    <div style="font-size:16px;font-weight:700;color:var(--muted);">Loading your game…</div>
+  </div>
+</div>
+
+<!-- CHILD SELECT SCREEN -->
+<div id="screen-child-select" class="screen">
+  <div class="hdr"><h1>👋 Who's playing?</h1></div>
   <div class="scroll-body">
-    <p class="greeting" id="home-greeting">Good morning,<br>Elliott! 🌟</p>
+    <p style="font-size:15px;color:var(--muted);margin-bottom:16px;">Tap your name to start!</p>
+    <div class="child-grid" id="child-select-grid"></div>
+  </div>
+</div>
+
+<!-- HOME SCREEN -->
+<div id="screen-home" class="screen">
+  <div class="hdr"><h1 id="home-title">🎓 My Game</h1></div>
+  <div class="scroll-body">
+    <p class="greeting" id="home-greeting">Good morning,<br>Friend! 🌟</p>
     <p class="greeting-sub" id="home-date"></p>
     <div id="home-status"></div>
     <div class="divider"></div>
@@ -171,6 +195,7 @@ body { display: flex; flex-direction: column; }
     <div class="divider"></div>
     <div class="section-lbl">More Fun</div>
     <button class="btn btn-gray" onclick="goBigQuiz()">🔀 Big Random Quiz</button>
+    <button class="btn" style="background:#1e293b;color:var(--muted);font-size:14px;margin-top:10px;" onclick="showReleaseNotes()">📋 What's New</button>
     <div class="divider"></div>
     <div class="section-lbl">My Progress</div>
     <div id="home-pie-mini"></div>
@@ -238,6 +263,7 @@ body { display: flex; flex-direction: column; }
 <div id="screen-stats" class="screen">
   <div class="hdr"><h1>📊 Stats</h1></div>
   <div class="scroll-body">
+    <div id="grade-info-card"></div>
     <div class="stat-row">
       <div class="stat-card"><div class="stat-num" id="st-facts">0</div><div class="stat-lbl">Facts Learned</div></div>
       <div class="stat-card"><div class="stat-num" id="st-right">0</div><div class="stat-lbl">Questions Right</div></div>
@@ -276,6 +302,47 @@ body { display: flex; flex-direction: column; }
   </div>
 </nav>
 
+<!-- RELEASE NOTES MODAL -->
+<div class="rn-overlay" id="rn-overlay" onclick="closeReleaseNotes()">
+  <div class="rn-sheet" onclick="event.stopPropagation()">
+    <div class="rn-handle"></div>
+    <div class="rn-title">📋 What's New</div>
+
+    <div class="rn-version">
+      <div><span class="rn-ver-badge">v1.2</span><span class="rn-ver-date">May 2025</span></div>
+      <div class="rn-ver-title">Grade-Level Learning System</div>
+      <div class="rn-item">300 brand-new facts spanning Pre-K through 3rd Grade — each calibrated to the right reading level and vocabulary.</div>
+      <div class="rn-item">Each child's profile now includes a grade level (Pre-K, Kindergarten, 1st, 2nd, or 3rd Grade).</div>
+      <div class="rn-item">The game automatically loads the right facts for each child's grade.</div>
+      <div class="rn-item">Accounts with multiple children now show a child-selector screen at startup so you can choose who's playing.</div>
+      <div class="rn-item">Each child's progress (streaks, pies, learned facts) is saved separately.</div>
+      <div class="rn-item">New 🎓 Graduate button on the Stats tab — tap it to move a child to the next grade level when they're ready.</div>
+    </div>
+
+    <div class="rn-version">
+      <div><span class="rn-ver-badge">v1.1</span><span class="rn-ver-date">April 2025</span></div>
+      <div class="rn-ver-title">User Accounts & Cloud Saving</div>
+      <div class="rn-item">Full login and registration system — create a family account with a username, email, and password.</div>
+      <div class="rn-item">Invite friends and family to join with a private invite code.</div>
+      <div class="rn-item">Add multiple child profiles to one account, each with their own name and age.</div>
+      <div class="rn-item">All progress is now saved to the cloud — play on any device and pick up right where you left off.</div>
+      <div class="rn-item">Forgot your password? Reset it by email in seconds.</div>
+    </div>
+
+    <div class="rn-version">
+      <div><span class="rn-ver-badge">v1.0</span><span class="rn-ver-date">March 2025</span></div>
+      <div class="rn-ver-title">Launch 🚀</div>
+      <div class="rn-item">Six learning categories: Animals, Colors &amp; Art, Numbers &amp; Shapes, Stories &amp; Books, The World, and Music &amp; Movement.</div>
+      <div class="rn-item">One new fact per category every day — learn it, then quiz yourself.</div>
+      <div class="rn-item">Earn pie slices for every correct quiz answer. Complete a full pie to make progress toward a prize!</div>
+      <div class="rn-item">Daily streaks, quiz accuracy tracking, and a calendar to see every day you played.</div>
+      <div class="rn-item">Big Random Quiz mode — review everything you've ever learned in a shuffled quiz.</div>
+    </div>
+
+    <button class="btn btn-gray" onclick="closeReleaseNotes()">Close</button>
+  </div>
+</div>
+
 <!-- CELEBRATION -->
 <div class="celebrate" id="celebrate" onclick="closeCelebration()">
   <div class="celebrate-box">
@@ -288,7 +355,7 @@ body { display: flex; flex-direction: column; }
 
 <script>
 // ═══════════════════════════════════════
-// FACTS DATABASE
+// CATEGORIES & GRADE CONFIG
 // ═══════════════════════════════════════
 const CATEGORIES = {
   animals: { name: "Animals", emoji: "🦁", color: "#22c55e", desc: "The Animal Kingdom" },
@@ -299,26 +366,104 @@ const CATEGORIES = {
   music:   { name: "Music & Movement", emoji: "🎵", color: "#a855f7", desc: "Music & Dance" }
 };
 
+const CAT_KEYS = ["animals","art","numbers","stories","world","music"];
+const GRADE_KEYS = ["preK","K","grade1","grade2","grade3"];
+const GRADE_NAMES = { preK:"Pre-K", K:"Kindergarten", grade1:"1st Grade", grade2:"2nd Grade", grade3:"3rd Grade" };
+
+// ═══════════════════════════════════════
+// FACTS DATABASE (5 grades × 6 cats × 10 facts)
+// ═══════════════════════════════════════
 const FACTS = {
+
+// ─── PRE-K ───────────────────────────────────────────────────────────────────
+preK: {
+  animals: [
+    { id:"pK_a1", fact:"Dogs wag their tails when they are happy. It is their way of saying hello!", q:"What do dogs do when they are happy?", a:"Wag their tails!" },
+    { id:"pK_a2", fact:"Cats purr when they feel cozy and safe. It is a soft rumbling sound they make in their throat.", q:"What sound do cats make when they feel safe and cozy?", a:"They purr!" },
+    { id:"pK_a3", fact:"Fish live underwater and breathe through special parts called gills instead of lungs.", q:"Where do fish live?", a:"Underwater!" },
+    { id:"pK_a4", fact:"Birds have feathers and wings. Most birds can fly high up in the sky!", q:"What do most birds use to fly?", a:"Their wings!" },
+    { id:"pK_a5", fact:"Frogs start life as tiny eggs in the water, then become tadpoles, and finally grow into frogs.", q:"What does a tadpole grow into?", a:"A frog!" },
+    { id:"pK_a6", fact:"Cows give us milk. We use milk to make cheese, butter, and ice cream!", q:"What yummy food comes from cows?", a:"Milk!" },
+    { id:"pK_a7", fact:"A baby dog is called a puppy and a baby cat is called a kitten.", q:"What is a baby cat called?", a:"A kitten!" },
+    { id:"pK_a8", fact:"Bears love to eat honey, berries, and fish. They are very good swimmers!", q:"What sweet food do bears love to eat?", a:"Honey!" },
+    { id:"pK_a9", fact:"Ducks can swim in water, walk on land, and fly in the air. They can do all three!", q:"Can ducks swim AND fly?", a:"Yes — they can swim, walk, and fly!" },
+    { id:"pK_a10", fact:"Rabbits have very long ears to help them hear danger coming from far away.", q:"Why do rabbits have such long ears?", a:"To hear danger coming!" }
+  ],
+  art: [
+    { id:"pK_ar1", fact:"Red and yellow mixed together make the color orange!", q:"What color do you get when you mix red and yellow?", a:"Orange!" },
+    { id:"pK_ar2", fact:"Blue and yellow mixed together make the color green!", q:"What color do you get when you mix blue and yellow?", a:"Green!" },
+    { id:"pK_ar3", fact:"Red, blue, and yellow are called the three primary colors. You can mix them to make other colors.", q:"What are the three primary colors?", a:"Red, blue, and yellow!" },
+    { id:"pK_ar4", fact:"A brush, some paint, and paper are all you need to make a painting. You can paint anything you imagine!", q:"What do you need to make a painting?", a:"A brush, paint, and paper!" },
+    { id:"pK_ar5", fact:"Red can make you feel excited and happy. Blue can make you feel calm and peaceful.", q:"Which color can make you feel calm?", a:"Blue!" },
+    { id:"pK_ar6", fact:"A circle is perfectly round, like the sun. A square has four equal sides.", q:"What shape has four equal sides?", a:"A square!" },
+    { id:"pK_ar7", fact:"Crayons come in so many colors! You can use them to draw anything you can imagine.", q:"What do you use crayons for?", a:"Drawing pictures!" },
+    { id:"pK_ar8", fact:"When you sculpt, you make art by squishing and shaping clay or play dough with your hands.", q:"What do you use your hands to shape when you sculpt?", a:"Clay or play dough!" },
+    { id:"pK_ar9", fact:"You can make music with your own body! Clap your hands, stomp your feet, or snap your fingers.", q:"Can you make music with your body?", a:"Yes — clap, stomp, or snap!" },
+    { id:"pK_ar10", fact:"Art is anything you make to share how you feel or what you see. Everyone can be an artist!", q:"Can anyone be an artist?", a:"Yes — everyone can be an artist!" }
+  ],
+  numbers: [
+    { id:"pK_n1", fact:"A circle is perfectly round with no corners and no straight sides at all.", q:"How many corners does a circle have?", a:"Zero — no corners!" },
+    { id:"pK_n2", fact:"A triangle has three sides and three corners.", q:"How many sides does a triangle have?", a:"Three sides!" },
+    { id:"pK_n3", fact:"A square has four equal sides and four corners.", q:"How many sides does a square have?", a:"Four equal sides!" },
+    { id:"pK_n4", fact:"When you count to five, you can use the fingers on one hand — one finger for each number!", q:"How many fingers do you need to count to five?", a:"Five fingers — one whole hand!" },
+    { id:"pK_n5", fact:"Two means a pair. You have two eyes, two ears, and two hands.", q:"How many eyes do you have?", a:"Two!" },
+    { id:"pK_n6", fact:"Zero means none at all. Zero cookies means the cookie jar is completely empty!", q:"What does the number zero mean?", a:"None at all — empty!" },
+    { id:"pK_n7", fact:"A rectangle looks like a long square. Doors and books are shaped like rectangles.", q:"What everyday things are shaped like rectangles?", a:"Doors and books!" },
+    { id:"pK_n8", fact:"Adding means putting things together to get more. One apple plus one apple equals two apples!", q:"What does adding mean?", a:"Putting things together to get more!" },
+    { id:"pK_n9", fact:"Biggest means the largest one. Smallest means the tiniest one of all.", q:"What word means the largest one?", a:"Biggest!" },
+    { id:"pK_n10", fact:"Numbers help us count things, measure things, and tell time. They are everywhere!", q:"What can we use numbers for?", a:"Counting, measuring, and telling time!" }
+  ],
+  stories: [
+    { id:"pK_st1", fact:"A book has pages full of words and pictures that tell a story. You turn the pages to find out what happens next!", q:"What do you find inside a book?", a:"Pages with words and pictures!" },
+    { id:"pK_st2", fact:"Most fairy tales begin with the words 'Once upon a time.' That means a magical story is about to start!", q:"How do most fairy tales start?", a:"Once upon a time!" },
+    { id:"pK_st3", fact:"A fairy tale is a made-up story with magic, brave heroes, and happy endings.", q:"What kind of story has magic and a happy ending?", a:"A fairy tale!" },
+    { id:"pK_st4", fact:"The library is a free place where you can borrow books to take home and read. Then you bring them back!", q:"Is it free to borrow books from the library?", a:"Yes, it is free!" },
+    { id:"pK_st5", fact:"Every story has a beginning, a middle, and an end. Something happens, and then it is all figured out!", q:"What three parts does every story have?", a:"A beginning, a middle, and an end!" },
+    { id:"pK_st6", fact:"Dr. Seuss wrote funny books with silly made-up words that are so fun to say out loud.", q:"Who wrote books with funny, made-up silly words?", a:"Dr. Seuss!" },
+    { id:"pK_st7", fact:"Poems are a special kind of writing. Many poems rhyme — like 'cat' rhymes with 'hat'!", q:"What is special about many poems?", a:"The words rhyme!" },
+    { id:"pK_st8", fact:"Characters are the people or animals that the story is about. They are like the stars of the book!", q:"What do you call the people or animals in a story?", a:"Characters!" },
+    { id:"pK_st9", fact:"A picture book tells a story using both pictures AND words. The pictures help you understand what is happening.", q:"What helps you understand what is happening in a picture book?", a:"The pictures!" },
+    { id:"pK_st10", fact:"The author is the person who wrote the book. The illustrator is the person who drew all the pictures.", q:"What is the person called who drew the pictures in a book?", a:"The illustrator!" }
+  ],
+  world: [
+    { id:"pK_w1", fact:"The sun rises in the morning to make it light outside, and it sets at night to make it dark.", q:"What makes it light outside during the day?", a:"The sun!" },
+    { id:"pK_w2", fact:"Rain falls from clouds when the sky fills up with water droplets. The clouds get heavy and the water falls down!", q:"Where does rain come from?", a:"From clouds!" },
+    { id:"pK_w3", fact:"Water can freeze and turn into ice when it gets very, very cold.", q:"What happens to water when it gets very cold?", a:"It freezes and becomes ice!" },
+    { id:"pK_w4", fact:"Plants need three things to grow: water, sunlight, and soil to put their roots in.", q:"What do plants need to grow?", a:"Water, sunlight, and soil!" },
+    { id:"pK_w5", fact:"The ocean is a huge, salty body of water where whales, sharks, and colorful fish all live.", q:"What do you call the big salty water where whales and fish live?", a:"The ocean!" },
+    { id:"pK_w6", fact:"Mountains are very tall pieces of land that reach up high into the sky. Some have snow on the top!", q:"What do you call very tall land that reaches up into the sky?", a:"Mountains!" },
+    { id:"pK_w7", fact:"There are four seasons in a year: spring, summer, autumn, and winter. Each one feels different!", q:"How many seasons are there in a year?", a:"Four seasons!" },
+    { id:"pK_w8", fact:"A rainbow appears in the sky when sunshine shines through raindrops. It shows many beautiful colors!", q:"When does a rainbow appear?", a:"When sunshine shines through raindrops!" },
+    { id:"pK_w9", fact:"The moon comes out at night. It glows because sunlight bounces off it and lights it up.", q:"What makes the moon glow at night?", a:"Sunlight bouncing off it!" },
+    { id:"pK_w10", fact:"Earth is the name of our planet — our home. It is a big blue and green ball floating in space!", q:"What is the name of our planet?", a:"Earth!" }
+  ],
+  music: [
+    { id:"pK_m1", fact:"Music is made up of sounds — some high, some low, some fast, and some slow. All together they sound beautiful!", q:"Is all music made of the same kind of sounds?", a:"No — high, low, fast, and slow sounds!" },
+    { id:"pK_m2", fact:"Drums make a big BOOM sound when you hit them. They are used to keep the beat in music.", q:"What sound does a drum make when you hit it?", a:"Boom!" },
+    { id:"pK_m3", fact:"A guitar has strings that you pluck or strum with your fingers to make music.", q:"How do you play a guitar?", a:"You pluck or strum its strings!" },
+    { id:"pK_m4", fact:"Singing is using your own voice to make music. Everyone has a voice — so everyone can sing!", q:"What do you use to sing?", a:"Your voice!" },
+    { id:"pK_m5", fact:"Fast music can make you want to jump up, dance, and move around!", q:"What might fast music make you want to do?", a:"Jump up and dance!" },
+    { id:"pK_m6", fact:"Slow, gentle music can help you feel calm and even a little bit sleepy.", q:"What kind of music can help you feel calm?", a:"Slow, gentle music!" },
+    { id:"pK_m7", fact:"A beat is the steady pulse in music — like a heartbeat tick-tocking along. You can clap to the beat!", q:"What is the steady pulse in music called?", a:"The beat!" },
+    { id:"pK_m8", fact:"A piano makes music when you press its keys. The low keys make deep sounds and the high keys make bright sounds.", q:"How do you make a piano make music?", a:"You press its keys!" },
+    { id:"pK_m9", fact:"Shaking a maraca makes a fun rattling sound. Maracas are easy to play — just shake them!", q:"How do you play a maraca?", a:"You shake it!" },
+    { id:"pK_m10", fact:"Playing music with other people is so much fun! When a group plays together, it is called a band.", q:"What do you call a group of people playing music together?", a:"A band!" }
+  ]
+},
+
+// ─── KINDERGARTEN ─────────────────────────────────────────────────────────────
+K: {
   animals: [
     { id:"a1", fact:"Butterflies taste with their feet! Their tiny feet can tell if a leaf is yummy enough to eat.", q:"What special body part do butterflies taste with?", a:"Their feet!" },
     { id:"a2", fact:"Elephants are the biggest animals that live on land. Baby elephants can walk just a few hours after being born!", q:"What giant animal can its babies walk just hours after being born?", a:"Elephants!" },
-    { id:"a3", fact:"Dogs can smell things thousands of times better than people can. That's why police use dogs to find things!", q:"Which animal has a smell that is thousands of times better than humans?", a:"Dogs!" },
+    { id:"a3", fact:"Dogs can smell things thousands of times better than people can. That's why police use dogs to find things!", q:"Which animal has a smell thousands of times better than humans?", a:"Dogs!" },
     { id:"a4", fact:"Penguins can't fly, but they're amazing swimmers. They use their wings like flippers to zoom through the water!", q:"What bird uses its wings as flippers to swim instead of fly?", a:"Penguins!" },
-    { id:"a5", fact:"Flamingos are born white and turn pink from eating tiny little shrimp and algae!", q:"What color are baby flamingos when they are born?", a:"White!" },
-    { id:"a6", fact:"Bees do a special waggle dance to tell other bees exactly where to find flowers with yummy nectar.", q:"What special dance do bees do to tell their friends where flowers are?", a:"The waggle dance!" },
+    { id:"a5", fact:"Flamingos are born white and turn pink from eating tiny shrimp and algae!", q:"What color are baby flamingos when they are born?", a:"White!" },
+    { id:"a6", fact:"Bees do a special waggle dance to tell other bees exactly where to find flowers with yummy nectar.", q:"What special dance do bees do to tell friends where flowers are?", a:"The waggle dance!" },
     { id:"a7", fact:"Octopuses have eight arms AND three hearts! They even have blue blood.", q:"How many hearts does an octopus have?", a:"Three hearts!" },
     { id:"a8", fact:"Giraffes have the same number of neck bones as humans — just 7! But each one is super long.", q:"How many bones are in a giraffe's neck?", a:"Seven — same as humans!" },
-    { id:"a9", fact:"Cats sleep about 12 to 16 hours every single day. No wonder they're always napping!", q:"How many hours a day do cats usually sleep?", a:"12 to 16 hours!" },
-    { id:"a10", fact:"Dolphins talk to each other using clicks and whistles. It's almost like their own secret language!", q:"How do dolphins talk to each other?", a:"With clicks and whistles!" },
-    { id:"a11", fact:"Cows have best friends! They feel sad when they're away from their friend.", q:"Do cows have best friends?", a:"Yes they do!" },
-    { id:"a12", fact:"A group of flamingos is called a flamboyance. That's a very fancy word!", q:"What is a group of flamingos called?", a:"A flamboyance!" },
-    { id:"a13", fact:"Snails can sleep for up to three years if the weather is too hot or too cold!", q:"How long can a snail sleep if the weather is bad?", a:"Up to three years!" },
-    { id:"a14", fact:"Sea otters hold hands when they sleep so they don't float away from each other.", q:"Why do sea otters hold hands when they sleep?", a:"So they don't float away!" },
-    { id:"a15", fact:"A group of owls is called a parliament. Parliament is also the name for where leaders meet to make rules!", q:"What is a group of owls called?", a:"A parliament!" },
-    { id:"a16", fact:"Polar bears have black skin under their white fur. Their fur is actually see-through!", q:"What color is a polar bear's skin under its white fur?", a:"Black!" },
-    { id:"a17", fact:"Starfish have no brain and no blood. Their tiny tube feet help them walk very slowly!", q:"Do starfish have a brain?", a:"No — they have no brain!" },
-    { id:"a18", fact:"Baby kangaroos are called joeys. When they're born, they're about as small as a jelly bean!", q:"What are baby kangaroos called?", a:"Joeys!" },
+    { id:"a9", fact:"Sea otters hold hands when they sleep so they don't float away from each other.", q:"Why do sea otters hold hands when they sleep?", a:"So they don't float away!" },
+    { id:"a10", fact:"Dolphins talk to each other using clicks and whistles. It's almost like their own secret language!", q:"How do dolphins talk to each other?", a:"With clicks and whistles!" }
   ],
   art: [
     { id:"ar1", fact:"Mixing red and blue makes purple! Red and yellow makes orange, and blue and yellow makes green.", q:"What color do you get when you mix red and blue?", a:"Purple!" },
@@ -326,14 +471,11 @@ const FACTS = {
     { id:"ar3", fact:"Rainbows always have 7 colors in the same order: red, orange, yellow, green, blue, indigo, and violet.", q:"How many colors are in a rainbow?", a:"Seven!" },
     { id:"ar4", fact:"Crayons were invented over 100 years ago. The word crayon comes from a French word that means chalk!", q:"About how old is the crayon?", a:"Over 100 years old!" },
     { id:"ar5", fact:"Cave people made paintings on cave walls thousands of years ago using berries and charcoal to make colors.", q:"What did cave people use to paint on cave walls?", a:"Berries and charcoal!" },
-    { id:"ar6", fact:"Sunflowers always face the sun! They slowly turn all day to follow where the sun goes across the sky.", q:"Which flower always faces the sun?", a:"Sunflowers!" },
-    { id:"ar7", fact:"Artists use primary colors — red, blue, and yellow — to mix almost every other color in the world.", q:"What are the three primary colors?", a:"Red, blue, and yellow!" },
-    { id:"ar8", fact:"The color red makes people feel excited and energized, while blue makes people feel calm and peaceful.", q:"Which color makes people feel calm and peaceful?", a:"Blue!" },
-    { id:"ar9", fact:"Origami is the Japanese art of folding paper into beautiful shapes like cranes and flowers, using no scissors or glue.", q:"What country does origami paper folding come from?", a:"Japan!" },
-    { id:"ar10", fact:"Sculptures are art you can walk around and touch. They can be made from clay, stone, wood, or even ice!", q:"What makes a sculpture different from a painting?", a:"You can walk around it and touch it!" },
-    { id:"ar11", fact:"The color wheel shows how colors relate to each other. Colors across from each other are called complementary colors.", q:"What are colors called that are across from each other on the color wheel?", a:"Complementary colors!" },
-    { id:"ar12", fact:"Pointillism is a way of making pictures using thousands of tiny dots. Up close it looks like dots, far away it looks like a scene!", q:"What is it called when a picture is made from thousands of tiny dots?", a:"Pointillism!" },
-    { id:"ar13", fact:"Vincent van Gogh painted 'Starry Night' while he was staying in a hospital. He painted over 900 pictures in just 10 years!", q:"What is the name of Van Gogh's famous painting with swirling stars?", a:"Starry Night!" },
+    { id:"ar6", fact:"Artists use primary colors — red, blue, and yellow — to mix almost every other color in the world.", q:"What are the three primary colors?", a:"Red, blue, and yellow!" },
+    { id:"ar7", fact:"The color red makes people feel excited and energized, while blue makes people feel calm and peaceful.", q:"Which color makes people feel calm and peaceful?", a:"Blue!" },
+    { id:"ar8", fact:"Origami is the Japanese art of folding paper into beautiful shapes like cranes and flowers, using no scissors or glue.", q:"What country does origami paper folding come from?", a:"Japan!" },
+    { id:"ar9", fact:"Vincent van Gogh painted 'Starry Night' while he was staying in a hospital. He painted over 900 pictures in just 10 years!", q:"What is the name of Van Gogh's famous painting with swirling stars?", a:"Starry Night!" },
+    { id:"ar10", fact:"Pointillism is a way of making pictures using thousands of tiny dots. Up close it looks like dots, far away it looks like a scene!", q:"What is it called when a picture is made from thousands of tiny dots?", a:"Pointillism!" }
   ],
   numbers: [
     { id:"n1", fact:"A triangle has 3 sides, a square has 4 sides, a pentagon has 5 sides, and a hexagon has 6 sides.", q:"How many sides does a pentagon have?", a:"Five sides!" },
@@ -345,24 +487,19 @@ const FACTS = {
     { id:"n7", fact:"An octagon has 8 sides. Stop signs are octagons! Count the sides next time you see one.", q:"How many sides does an octagon have?", a:"Eight sides!" },
     { id:"n8", fact:"Half of something means splitting it into 2 equal pieces. Half of 10 is 5, and half of 4 is 2.", q:"What does it mean to take half of something?", a:"Split it into 2 equal pieces!" },
     { id:"n9", fact:"The number 100 is made of ten groups of 10. A century is 100 years, and a dollar has 100 cents!", q:"How many cents are in one dollar?", a:"100 cents!" },
-    { id:"n10", fact:"A rectangle has 4 sides just like a square, but two of its sides are longer than the other two.", q:"How is a rectangle different from a square?", a:"Two sides are longer!" },
-    { id:"n11", fact:"Odd numbers always end in 1, 3, 5, 7, or 9. Even numbers always end in 0, 2, 4, 6, or 8.", q:"Do odd numbers end in even or odd digits?", a:"Odd digits: 1, 3, 5, 7, or 9!" },
-    { id:"n12", fact:"Pi (say it like pie, 🥧) is a special number that helps us figure out how big circles are. It's about 3.14.", q:"What special number helps measure circles?", a:"Pi — about 3.14!" },
-    { id:"n13", fact:"There are 60 seconds in a minute, 60 minutes in an hour, and 24 hours in a full day!", q:"How many minutes are in one hour?", a:"60 minutes!" },
+    { id:"n10", fact:"There are 60 seconds in a minute, 60 minutes in an hour, and 24 hours in a full day!", q:"How many minutes are in one hour?", a:"60 minutes!" }
   ],
   stories: [
     { id:"st1", fact:"Dr. Seuss made up lots of silly words for his books, like Whos and Lorax and Sneetches — he invented them all!", q:"Who is the author who invented silly words like Whos and Lorax?", a:"Dr. Seuss!" },
     { id:"st2", fact:"Fairy tales often start with 'Once upon a time' and end with 'happily ever after.' They're magical made-up stories.", q:"How do most fairy tales begin?", a:"Once upon a time!" },
-    { id:"st3", fact:"In 'The Very Hungry Caterpillar,' the caterpillar eats through 25 different foods before becoming a butterfly!", q:"What does the Very Hungry Caterpillar turn into at the end?", a:"A butterfly!" },
+    { id:"st3", fact:"In 'The Very Hungry Caterpillar,' the caterpillar eats through lots of foods before becoming a beautiful butterfly!", q:"What does the Very Hungry Caterpillar turn into at the end?", a:"A butterfly!" },
     { id:"st4", fact:"Comic books tell stories using pictures AND words together. The words are usually inside speech bubbles!", q:"How do comic books tell their stories?", a:"With pictures and words in speech bubbles!" },
     { id:"st5", fact:"Cinderella is one of the oldest fairy tales ever — people have been telling versions of it for over 2,000 years!", q:"About how old is the fairy tale Cinderella?", a:"Over 2,000 years old!" },
     { id:"st6", fact:"Audiobooks are books you listen to instead of reading. You can enjoy a whole story while riding in the car!", q:"What is an audiobook?", a:"A book you listen to!" },
     { id:"st7", fact:"Libraries are free! Anyone can go in and borrow books, then bring them back when they're done reading.", q:"Do you have to pay to borrow books from a library?", a:"No, libraries are free!" },
-    { id:"st8", fact:"The first printed books were made by hand, copying every single word. Printing presses made it much faster to make books!", q:"How were books made before printing presses?", a:"Written out by hand!" },
-    { id:"st9", fact:"Harry Potter has been translated into over 80 different languages so kids all around the world can read it.", q:"How many languages has Harry Potter been translated into?", a:"Over 80 languages!" },
-    { id:"st10", fact:"Aesop was a storyteller from ancient Greece. His fables, like 'The Tortoise and the Hare,' teach important life lessons.", q:"What do Aesop's fables always teach?", a:"Important life lessons!" },
-    { id:"st11", fact:"A chapter book is divided into sections called chapters. Each chapter usually ends on an exciting moment to make you want to read more!", q:"What are the sections of a chapter book called?", a:"Chapters!" },
-    { id:"st12", fact:"The word 'encyclopedia' comes from Greek and means 'circle of learning' — because encyclopedias teach about all kinds of things!", q:"What language does the word encyclopedia come from?", a:"Greek!" },
+    { id:"st8", fact:"Harry Potter has been translated into over 80 different languages so kids all around the world can read it.", q:"How many languages has Harry Potter been translated into?", a:"Over 80 languages!" },
+    { id:"st9", fact:"Aesop was a storyteller from ancient Greece. His fables, like 'The Tortoise and the Hare,' teach important life lessons.", q:"What do Aesop's fables always teach?", a:"Important life lessons!" },
+    { id:"st10", fact:"A chapter book is divided into sections called chapters. Each chapter usually ends on an exciting moment to make you want to read more!", q:"What are the sections of a chapter book called?", a:"Chapters!" }
   ],
   world: [
     { id:"w1", fact:"Earth is covered mostly by water — about 71% is ocean! That's why Earth looks blue from space.", q:"Why does Earth look mostly blue from outer space?", a:"Because most of it is ocean!" },
@@ -371,45 +508,280 @@ const FACTS = {
     { id:"w4", fact:"Antarctica is the coldest place on Earth. It's covered in ice and is home to penguins, seals, and not much else!", q:"What is the coldest continent on Earth?", a:"Antarctica!" },
     { id:"w5", fact:"Mount Everest is the tallest mountain in the world. It's so high that planes sometimes fly past its peak!", q:"What is the name of the tallest mountain in the world?", a:"Mount Everest!" },
     { id:"w6", fact:"The Sahara Desert in Africa is the biggest hot desert in the world. It's almost as big as the entire United States!", q:"Where is the Sahara Desert?", a:"Africa!" },
-    { id:"w7", fact:"Japan is a country made up of thousands of islands out in the Pacific Ocean. Its capital city is Tokyo.", q:"What is the capital city of Japan?", a:"Tokyo!" },
-    { id:"w8", fact:"Volcanoes are mountains that can erupt and shoot out hot melted rock called lava from deep inside the Earth.", q:"What is the hot melted rock called that comes out of a volcano?", a:"Lava!" },
-    { id:"w9", fact:"The Great Barrier Reef in Australia is the world's biggest coral reef. It's so big you can see it from space!", q:"Where is the Great Barrier Reef?", a:"Australia!" },
-    { id:"w10", fact:"The Nile River in Africa is the longest river in the world. Ancient Egyptians built their civilization right along its banks.", q:"What is the longest river in the world?", a:"The Nile River!" },
-    { id:"w11", fact:"Deserts can be hot OR cold! Antarctica is the world's largest cold desert — even bigger than the Sahara.", q:"Can deserts be cold?", a:"Yes — Antarctica is a cold desert!" },
-    { id:"w12", fact:"The Northern Lights, called the Aurora Borealis, are colorful lights that dance in the sky in countries near the North Pole.", q:"What are the colorful lights that dance in the sky near the North Pole called?", a:"The Northern Lights — or Aurora Borealis!" },
-    { id:"w13", fact:"Over 7 billion people live on Earth! That's more than a thousand times the population of a big city.", q:"Roughly how many people live on planet Earth?", a:"Over 7 billion people!" },
+    { id:"w7", fact:"Volcanoes are mountains that can erupt and shoot out hot melted rock called lava from deep inside the Earth.", q:"What is the hot melted rock called that comes out of a volcano?", a:"Lava!" },
+    { id:"w8", fact:"The Great Barrier Reef in Australia is the world's biggest coral reef. It's so big you can see it from space!", q:"Where is the Great Barrier Reef?", a:"Australia!" },
+    { id:"w9", fact:"The Nile River in Africa is the longest river in the world. Ancient Egyptians built their civilization right along its banks.", q:"What is the longest river in the world?", a:"The Nile River!" },
+    { id:"w10", fact:"The Northern Lights, called the Aurora Borealis, are colorful lights that dance in the sky near the North Pole.", q:"What are the colorful lights in the sky near the North Pole called?", a:"The Northern Lights — Aurora Borealis!" }
   ],
   music: [
     { id:"m1", fact:"There are 4 main families of instruments: strings (like violin), woodwinds (like flute), brass (like trumpet), and percussion (like drums).", q:"How many main families of musical instruments are there?", a:"Four — strings, woodwinds, brass, and percussion!" },
-    { id:"m2", fact:"Mozart started composing music when he was just 5 years old — the same age as you! He wrote over 600 pieces of music.", q:"How old was Mozart when he started composing music?", a:"Five years old — just like you!" },
-    { id:"m3", fact:"Ballet dancers who dance on their very tiptoes wear special shoes called pointe shoes to protect their feet.", q:"What are the special shoes that ballet dancers use to dance on their tiptoes called?", a:"Pointe shoes!" },
+    { id:"m2", fact:"Mozart started composing music when he was just 5 years old! He wrote over 600 pieces of music in his lifetime.", q:"How old was Mozart when he started composing music?", a:"Five years old!" },
+    { id:"m3", fact:"Ballet dancers who dance on their very tiptoes wear special shoes called pointe shoes to protect their feet.", q:"What are the special shoes ballet dancers use to dance on their tiptoes called?", a:"Pointe shoes!" },
     { id:"m4", fact:"When you clap your hands along to music, you're keeping the beat — the steady pulse that makes music feel good to move to!", q:"What is the steady pulse in music that you clap along to called?", a:"The beat!" },
     { id:"m5", fact:"Singing is actually exercise! It's a workout for your lungs and the muscles in your throat.", q:"Is singing a form of exercise?", a:"Yes — it exercises your lungs and throat!" },
     { id:"m6", fact:"The world's oldest known musical instrument is a flute made from a bird bone — it's over 40,000 years old!", q:"What is the oldest known musical instrument in the world?", a:"A bone flute!" },
-    { id:"m7", fact:"Drums are one of the very oldest instruments ever. Almost every culture in all of history has had some kind of drum.", q:"Are drums one of the oldest instruments in the world?", a:"Yes — one of the oldest!" },
-    { id:"m8", fact:"Musical notes have letter names: A, B, C, D, E, F, and G. After G, it goes back to A again!", q:"What are musical notes named after?", a:"The letters A through G!" },
-    { id:"m9", fact:"A lullaby is a soft, gentle song parents sing to help babies fall asleep. Most cultures around the world have lullabies.", q:"What is a lullaby?", a:"A soft song to help babies sleep!" },
-    { id:"m10", fact:"The piano has 88 keys. About half of them are white and the rest are black. Pressing a key makes a small hammer hit a string inside!", q:"How many keys does a piano have?", a:"88 keys!" },
-    { id:"m11", fact:"Music can change how we feel! Happy songs make us feel energetic, and slow songs can make us feel calm or even sad.", q:"Can music change how you feel?", a:"Yes — it can make you happy, calm, or even sad!" },
-    { id:"m12", fact:"An orchestra is a very large group of musicians playing together. The conductor waves a stick called a baton to lead them all.", q:"What does the conductor of an orchestra wave to lead the musicians?", a:"A baton!" },
+    { id:"m7", fact:"Musical notes have letter names: A, B, C, D, E, F, and G. After G, it goes back to A again!", q:"What are musical notes named after?", a:"The letters A through G!" },
+    { id:"m8", fact:"A lullaby is a soft, gentle song parents sing to help babies fall asleep. Most cultures around the world have lullabies.", q:"What is a lullaby?", a:"A soft song to help babies sleep!" },
+    { id:"m9", fact:"The piano has 88 keys. About half of them are white and the rest are black. Pressing a key makes a small hammer hit a string inside!", q:"How many keys does a piano have?", a:"88 keys!" },
+    { id:"m10", fact:"An orchestra is a very large group of musicians playing together. The conductor waves a stick called a baton to lead them all.", q:"What does the conductor of an orchestra wave to lead the musicians?", a:"A baton!" }
   ]
-};
+},
 
-const CAT_KEYS = ["animals","art","numbers","stories","world","music"];
+// ─── 1ST GRADE ────────────────────────────────────────────────────────────────
+grade1: {
+  animals: [
+    { id:"g1_a1", fact:"Metamorphosis is how a caterpillar becomes a butterfly. It happens in four stages: egg, caterpillar, chrysalis, then butterfly!", q:"What are the four stages of a butterfly's life?", a:"Egg, caterpillar, chrysalis, butterfly!" },
+    { id:"g1_a2", fact:"Bats use echolocation to find food in the dark — they send out sounds and listen for the echoes that bounce back.", q:"What is it called when bats use sound echoes to find their way?", a:"Echolocation!" },
+    { id:"g1_a3", fact:"Salmon are born in rivers, swim out to the ocean to grow, then return to the exact same river to have their own babies.", q:"Where do salmon return to have their babies?", a:"The same river where they were born!" },
+    { id:"g1_a4", fact:"Cheetahs are the fastest land animals on Earth and can sprint up to 70 miles per hour in short bursts.", q:"What is the fastest land animal?", a:"The cheetah!" },
+    { id:"g1_a5", fact:"Meerkats take turns being a lookout — one stands on guard to warn the whole group while the others eat.", q:"What do meerkats do to protect their group while eating?", a:"One acts as a lookout!" },
+    { id:"g1_a6", fact:"Electric eels can produce electricity from their bodies to stun prey or defend themselves from danger.", q:"What can electric eels produce from their bodies?", a:"Electricity!" },
+    { id:"g1_a7", fact:"Wolves live in family groups called packs. They communicate through howling, body language, and scent.", q:"What do you call a family group of wolves?", a:"A pack!" },
+    { id:"g1_a8", fact:"A chameleon can change its skin color to show its mood — it is not just for camouflage as many people think!", q:"Why do chameleons change color?", a:"To show their mood!" },
+    { id:"g1_a9", fact:"Sea turtles travel thousands of miles across the ocean using Earth's magnetic field as a compass to navigate.", q:"How do sea turtles navigate across thousands of miles of ocean?", a:"Using Earth's magnetic field!" },
+    { id:"g1_a10", fact:"The blue whale is the largest animal ever to live on Earth. Its heart alone is as big as a small car!", q:"What is the largest animal ever to live on Earth?", a:"The blue whale!" }
+  ],
+  art: [
+    { id:"g1_ar1", fact:"Leonardo da Vinci was both a famous painter AND an inventor. He designed flying machines 500 years before airplanes were invented!", q:"What makes Leonardo da Vinci unusual among artists?", a:"He was also an inventor who designed flying machines!" },
+    { id:"g1_ar2", fact:"Michelangelo painted the ceiling of the Sistine Chapel lying on his back on a scaffold. It took him four whole years!", q:"How long did it take Michelangelo to paint the Sistine Chapel ceiling?", a:"Four years!" },
+    { id:"g1_ar3", fact:"A fresco is a painting made on wet plaster — the colors soak into the wall and can last for centuries.", q:"What kind of painting is made on wet plaster?", a:"A fresco!" },
+    { id:"g1_ar4", fact:"Perspective in art means drawing things that are far away smaller, so a flat picture looks three-dimensional.", q:"What technique makes a flat painting look 3D?", a:"Perspective!" },
+    { id:"g1_ar5", fact:"Warm colors like red, orange, and yellow make you feel energetic. Cool colors like blue and green feel calming.", q:"What do warm colors like red and orange make you feel?", a:"Energetic!" },
+    { id:"g1_ar6", fact:"Abstract art doesn't look like real things — it uses shapes, colors, and lines to express feelings and ideas.", q:"What is abstract art?", a:"Art that uses shapes and colors to express feelings, not real things!" },
+    { id:"g1_ar7", fact:"The Impressionist painters like Monet painted how light looked at different times of day, using loose, quick brushstrokes.", q:"What were Impressionist painters like Monet trying to capture?", a:"How light looked at different times of day!" },
+    { id:"g1_ar8", fact:"Symmetry means both sides of something look the same. Many famous buildings, artworks, and animals are symmetrical.", q:"What does symmetry mean?", a:"Both sides look the same!" },
+    { id:"g1_ar9", fact:"Photography is a form of art that captures moments in time using a camera. The first-ever photograph was taken in 1826.", q:"When was the first photograph ever taken?", a:"1826!" },
+    { id:"g1_ar10", fact:"Architecture is the art of designing buildings. Architects combine creativity and math to make structures that are safe and beautiful.", q:"What do you call the art and science of designing buildings?", a:"Architecture!" }
+  ],
+  numbers: [
+    { id:"g1_n1", fact:"Place value means the position of a digit tells you its worth. The '3' in 300 means three hundreds!", q:"What does place value mean?", a:"The position of a digit tells you how much it is worth!" },
+    { id:"g1_n2", fact:"A fraction shows part of a whole. One-half means one out of two equal parts. One-quarter means one out of four.", q:"What does one-half mean?", a:"One out of two equal parts!" },
+    { id:"g1_n3", fact:"Multiplication is a faster way of adding the same number over and over — 3 times 4 means three groups of four.", q:"What is multiplication a faster way of doing?", a:"Adding the same number over and over!" },
+    { id:"g1_n4", fact:"A right angle is a perfect square corner, like the corner of a book. It measures exactly 90 degrees.", q:"How many degrees is a right angle?", a:"90 degrees!" },
+    { id:"g1_n5", fact:"Roman numerals use letters instead of digits: I means 1, V means 5, X means 10, and C means 100.", q:"In Roman numerals, what letter means 10?", a:"X!" },
+    { id:"g1_n6", fact:"The perimeter of a shape is the distance all the way around its outside edge. You measure it by adding all the side lengths.", q:"What is the perimeter of a shape?", a:"The distance all the way around its outside!" },
+    { id:"g1_n7", fact:"There are 365 days in a year. Every four years there is a leap year with 366 days — an extra day in February!", q:"How many days are in a normal year?", a:"365 days!" },
+    { id:"g1_n8", fact:"A prime number can only be divided evenly by 1 and by itself. 2, 3, 5, 7, and 11 are the first prime numbers.", q:"What makes a number a prime number?", a:"It can only be divided by 1 and itself!" },
+    { id:"g1_n9", fact:"Negative numbers are less than zero. On a thermometer, negative 10 is colder than zero degrees.", q:"Are negative numbers more or less than zero?", a:"Less than zero!" },
+    { id:"g1_n10", fact:"The area of a shape is how much space it covers. You find the area of a rectangle by multiplying its length times its width.", q:"What does the area of a shape measure?", a:"How much space it covers!" }
+  ],
+  stories: [
+    { id:"g1_st1", fact:"A myth is an ancient story people used to explain things in nature — like why the sun rises or how the seasons change.", q:"What is a myth?", a:"An ancient story that explains things in nature!" },
+    { id:"g1_st2", fact:"Alliteration is when many words in a row start with the same sound, like 'Peter Piper picked a peck of pickled peppers.'", q:"What is alliteration?", a:"Many words in a row starting with the same sound!" },
+    { id:"g1_st3", fact:"A biography is a book about a real person's life, written by someone else who researched that person carefully.", q:"What is a biography?", a:"A book about a real person's life!" },
+    { id:"g1_st4", fact:"The setting of a story is where and when it takes place — it shapes the entire mood and feel of the story.", q:"What is the setting of a story?", a:"Where and when the story takes place!" },
+    { id:"g1_st5", fact:"Dialogue is the words that characters say to each other, shown inside quotation marks in a book.", q:"What do we call the words characters speak to each other?", a:"Dialogue!" },
+    { id:"g1_st6", fact:"In a plot, the climax is the most exciting, important moment — the turning point where everything changes.", q:"What is the climax of a story?", a:"The most exciting turning point!" },
+    { id:"g1_st7", fact:"Foreshadowing is when an author drops hints about something that will happen later in the story.", q:"What is foreshadowing?", a:"Hints about what will happen later!" },
+    { id:"g1_st8", fact:"Genre describes the type of story — like fantasy, mystery, adventure, or historical fiction. Each genre has its own rules.", q:"What does genre mean?", a:"The type or category of a story!" },
+    { id:"g1_st9", fact:"The narrative of a story includes the characters, the setting, and all the events in the order they happen.", q:"What does the narrative of a story include?", a:"Characters, setting, and events in order!" },
+    { id:"g1_st10", fact:"An autobiography is a book a person writes about their own life — auto means self, so they are telling their own story.", q:"What is a book someone writes about their own life called?", a:"An autobiography!" }
+  ],
+  world: [
+    { id:"g1_w1", fact:"The water cycle is how water moves through nature — it evaporates from oceans, forms clouds, then falls as rain or snow.", q:"What is the water cycle?", a:"How water moves through nature — evaporates, forms clouds, then falls as rain!" },
+    { id:"g1_w2", fact:"There are three types of rocks: igneous (formed from lava), sedimentary (formed from layers), and metamorphic (changed by heat).", q:"How many types of rocks are there?", a:"Three — igneous, sedimentary, and metamorphic!" },
+    { id:"g1_w3", fact:"The equator is an imaginary line around the middle of Earth. Places near the equator are warm all year long.", q:"What is the equator?", a:"An imaginary line around the middle of Earth!" },
+    { id:"g1_w4", fact:"A compass helps you find direction by pointing north. It works because Earth itself has a giant magnetic field.", q:"Why does a compass always point north?", a:"Because Earth has a magnetic field!" },
+    { id:"g1_w5", fact:"The atmosphere is the layer of air that wraps around Earth. It protects us from the sun's harshest rays.", q:"What is the atmosphere?", a:"The layer of air that surrounds and protects Earth!" },
+    { id:"g1_w6", fact:"Tides are when the ocean water rises and falls on beaches. They are caused by the moon's gravity pulling on Earth's water.", q:"What causes ocean tides?", a:"The moon's gravity!" },
+    { id:"g1_w7", fact:"A river always flows from a higher place (its source) down to a lower place, often emptying into the sea.", q:"Which direction does a river always flow?", a:"Downhill, from high to low!" },
+    { id:"g1_w8", fact:"Fossils are the preserved remains of plants and animals that lived millions of years ago, found trapped inside rock.", q:"What are fossils?", a:"Preserved remains of ancient plants and animals found in rock!" },
+    { id:"g1_w9", fact:"Countries are made up of smaller areas called states, provinces, or regions, each with their own local governments.", q:"What are the smaller areas inside a country called?", a:"States or provinces!" },
+    { id:"g1_w10", fact:"Deserts are places that get less than 10 inches of rain per year. They can be scorching hot OR bitterly cold!", q:"How much rain does a desert get per year?", a:"Less than 10 inches!" }
+  ],
+  music: [
+    { id:"g1_m1", fact:"Ludwig van Beethoven kept writing music even after he became completely deaf — he felt the vibrations through the floor!", q:"What remarkable thing did Beethoven do after going deaf?", a:"He kept composing music!" },
+    { id:"g1_m2", fact:"Jazz music was born in New Orleans around 1900, mixing African rhythms with European instruments in brand new ways.", q:"Where did jazz music come from?", a:"New Orleans!" },
+    { id:"g1_m3", fact:"Tempo is how fast or slow music is played. 'Presto' means very fast, 'andante' means walking pace, and 'largo' means very slow.", q:"What does the musical term 'tempo' describe?", a:"How fast or slow the music is played!" },
+    { id:"g1_m4", fact:"A melody is the main tune you sing or hum — it's the part of the music you remember and carry with you afterwards.", q:"What is the melody of a song?", a:"The main tune you sing or hum!" },
+    { id:"g1_m5", fact:"Harmony is when two or more different notes are played at the same time, creating a richer, fuller sound together.", q:"What is harmony in music?", a:"Two or more notes played together!" },
+    { id:"g1_m6", fact:"An opera is a play where ALL the words are sung instead of spoken. Some operas last three or four hours!", q:"What makes an opera different from a regular play?", a:"All the words are sung!" },
+    { id:"g1_m7", fact:"When musicians improvise, they make up the music as they go — jazz and blues musicians are famous for doing this.", q:"What does it mean to improvise in music?", a:"Making up the music as you play!" },
+    { id:"g1_m8", fact:"Rhythm is the pattern of long and short sounds in music — it's what makes you tap your foot and feel the groove.", q:"What is rhythm in music?", a:"The pattern of long and short sounds!" },
+    { id:"g1_m9", fact:"A symphony is a long piece of music written for a full orchestra, usually divided into four sections called movements.", q:"What are the sections of a symphony called?", a:"Movements!" },
+    { id:"g1_m10", fact:"The treble clef and bass clef are symbols in written music that tell musicians which range of notes to play.", q:"What do the treble clef and bass clef tell a musician?", a:"Which range of notes to play!" }
+  ]
+},
+
+// ─── 2ND GRADE ────────────────────────────────────────────────────────────────
+grade2: {
+  animals: [
+    { id:"g2_a1", fact:"Migration is when animals travel long distances with the seasons. Arctic terns fly from the Arctic to Antarctica and back — over 44,000 miles every year!", q:"What is animal migration?", a:"Traveling long distances with the seasons!" },
+    { id:"g2_a2", fact:"Camouflage helps animals blend into their environment to hide from predators or sneak up on prey without being noticed.", q:"What does camouflage help animals do?", a:"Blend into their environment to hide!" },
+    { id:"g2_a3", fact:"Symbiosis is when two different species live together in a way that benefits at least one of them. Clownfish and sea anemones are a famous example.", q:"What is symbiosis?", a:"When two different species live together in a way that helps one or both of them!" },
+    { id:"g2_a4", fact:"Bioluminescence is when living things produce their own light. Deep-sea fish use it to lure prey in the pitch-black ocean.", q:"What is bioluminescence?", a:"When living things produce their own light!" },
+    { id:"g2_a5", fact:"A colony of ants can contain millions of workers, all following invisible chemical signals called pheromones.", q:"What chemical signals do ants follow?", a:"Pheromones!" },
+    { id:"g2_a6", fact:"Crocodilians have existed for over 200 million years — they survived the same extinction event that wiped out the dinosaurs.", q:"How long have crocodilians existed?", a:"Over 200 million years!" },
+    { id:"g2_a7", fact:"The mantis shrimp can punch with the force of a bullet and has 16 types of color receptors. Humans only have 3!", q:"How many types of color receptors does a mantis shrimp have?", a:"16 — compared to just 3 in humans!" },
+    { id:"g2_a8", fact:"Birds of paradise in New Guinea have some of the most elaborate courtship dances in the animal kingdom to attract mates.", q:"What are birds of paradise famous for?", a:"Their elaborate courtship dances!" },
+    { id:"g2_a9", fact:"Naked mole rats are the only cold-blooded mammals in the world. They live in underground colonies led by a single queen.", q:"What makes naked mole rats unique among mammals?", a:"They are cold-blooded — the only mammals that are!" },
+    { id:"g2_a10", fact:"The Venus flytrap catches insects using electrical signals — it only snaps shut if two hairs inside are triggered within 20 seconds.", q:"How does a Venus flytrap know when to snap shut?", a:"Two hairs must be triggered within 20 seconds!" }
+  ],
+  art: [
+    { id:"g2_ar1", fact:"The Fibonacci sequence (1, 1, 2, 3, 5, 8, 13…) appears in art and nature — in flower petals, pinecones, and spiral seashells.", q:"Where does the Fibonacci sequence appear in nature?", a:"Flower petals, pinecones, and spiral shells!" },
+    { id:"g2_ar2", fact:"Chiaroscuro is an Italian word for the dramatic contrast between light and dark in a painting, used masterfully by Rembrandt.", q:"What is chiaroscuro?", a:"The dramatic contrast between light and dark in a painting!" },
+    { id:"g2_ar3", fact:"Installation art uses three-dimensional objects placed in a space to transform how you experience a whole room.", q:"What makes installation art different from a painting?", a:"It fills a whole room and you can walk through it!" },
+    { id:"g2_ar4", fact:"Screen printing uses a mesh stencil and ink to reproduce the same image many times. Andy Warhol made it famous as fine art.", q:"Who made screen printing famous as fine art?", a:"Andy Warhol!" },
+    { id:"g2_ar5", fact:"Typography is the art of arranging letters and text in a way that is readable and visually appealing — like logos and book covers.", q:"What is typography?", a:"The art of arranging letters and text visually!" },
+    { id:"g2_ar6", fact:"Surrealism was an art movement in the 1920s where artists like Salvador Dalí painted dreamlike, impossible scenes.", q:"What was Surrealism?", a:"An art movement featuring dreamlike, impossible scenes!" },
+    { id:"g2_ar7", fact:"Negative space is the empty area around and between the subjects in art. Skilled artists design the negative space intentionally.", q:"What is negative space in art?", a:"The empty area around and between the subjects!" },
+    { id:"g2_ar8", fact:"Isaac Newton showed that a prism can split white light into all the colors of the rainbow — the full visible spectrum.", q:"What did Isaac Newton discover about white light?", a:"It contains all the colors of the rainbow!" },
+    { id:"g2_ar9", fact:"A motif is a recurring shape, color, or symbol that repeats throughout a work of art or design to create a pattern or theme.", q:"What is an artistic motif?", a:"A recurring element like a shape or symbol!" },
+    { id:"g2_ar10", fact:"The Bauhaus was a groundbreaking art school in 1920s Germany that united art, craft, and industrial design as equals.", q:"What was the Bauhaus?", a:"A German art school that united art, craft, and design!" }
+  ],
+  numbers: [
+    { id:"g2_n1", fact:"The Pythagorean theorem says: in a right triangle, a² + b² = c², where c is the longest side, called the hypotenuse.", q:"What does the Pythagorean theorem calculate?", a:"The sides of a right triangle using a² + b² = c²!" },
+    { id:"g2_n2", fact:"Prime factorization breaks a number down into its prime building blocks — 12 equals 2 × 2 × 3.", q:"What does prime factorization do?", a:"Breaks a number into its prime building blocks!" },
+    { id:"g2_n3", fact:"A ratio compares two quantities. If there are 3 red marbles for every 5 blue ones, the ratio is 3:5.", q:"What does a ratio do?", a:"Compares two quantities!" },
+    { id:"g2_n4", fact:"Probability tells you how likely something is to happen. Flipping heads on a fair coin has a probability of one-half, or 50%.", q:"What does probability measure?", a:"How likely something is to happen!" },
+    { id:"g2_n5", fact:"An exponent shows how many times to multiply a number by itself. 2 to the power of 3 means 2 × 2 × 2, which equals 8.", q:"What does an exponent tell you to do?", a:"Multiply a number by itself that many times!" },
+    { id:"g2_n6", fact:"The coordinate plane uses two number lines (x and y) so any point on a grid can be found using just two numbers.", q:"What two things does the coordinate plane use to locate a point?", a:"An x number and a y number!" },
+    { id:"g2_n7", fact:"Algebra uses letters to stand for unknown numbers, letting you write equations and solve for missing values.", q:"What does algebra use letters for?", a:"To stand for unknown numbers!" },
+    { id:"g2_n8", fact:"The median is the middle value in a sorted list of numbers. The mean is the average. Both are measures of central tendency.", q:"What is the median of a set of numbers?", a:"The middle value when they are sorted!" },
+    { id:"g2_n9", fact:"Binary code uses only 0s and 1s to represent any number. Computers use binary because switches can be either on (1) or off (0).", q:"Why do computers use binary code?", a:"Because computer switches are either on (1) or off (0)!" },
+    { id:"g2_n10", fact:"Infinity is not a number — it is the concept of going on forever without end. Mathematicians have proven there are different sizes of infinity!", q:"Is infinity a number?", a:"No — it is the idea of going on forever without end!" }
+  ],
+  stories: [
+    { id:"g2_st1", fact:"Magical realism is a literary style where magical events happen in an otherwise realistic world, used by Gabriel García Márquez.", q:"What is magical realism?", a:"When magical events happen in an otherwise realistic world!" },
+    { id:"g2_st2", fact:"The hero's journey is a storytelling pattern identified by scholar Joseph Campbell — a hero goes on an adventure, faces a crisis, wins, and returns changed.", q:"Who identified the hero's journey as a storytelling pattern?", a:"Joseph Campbell!" },
+    { id:"g2_st3", fact:"Satire uses humor, irony, and exaggeration to criticize society or politics — writers like Jonathan Swift and Mark Twain used it brilliantly.", q:"What is satire?", a:"Using humor and exaggeration to criticize society!" },
+    { id:"g2_st4", fact:"Johannes Gutenberg's printing press, invented around 1440, made it possible to produce books quickly and spread knowledge across Europe.", q:"Who invented the printing press?", a:"Johannes Gutenberg!" },
+    { id:"g2_st5", fact:"Onomatopoeia is when a word sounds like the thing it describes — buzz, crash, splash, and sizzle are all onomatopoeic words.", q:"What is onomatopoeia?", a:"When a word sounds like what it describes — like buzz or splash!" },
+    { id:"g2_st6", fact:"A dystopia is a dark imagined future where society has gone badly wrong. Famous examples include 1984 and The Hunger Games.", q:"What is a dystopia?", a:"A dark imagined future where society has gone badly wrong!" },
+    { id:"g2_st7", fact:"An unreliable narrator is a storyteller whose account cannot be fully trusted — they might be lying, confused, or biased.", q:"What is an unreliable narrator?", a:"A storyteller whose account cannot be fully trusted!" },
+    { id:"g2_st8", fact:"Oral tradition means stories passed down through generations by being spoken aloud, before writing was ever invented.", q:"What is oral tradition?", a:"Stories passed down by being spoken aloud through generations!" },
+    { id:"g2_st9", fact:"An archetype is a character type that appears across many cultures and stories worldwide — like the wise mentor or the trickster.", q:"What is a character archetype?", a:"A character type that appears across many different cultures and stories!" },
+    { id:"g2_st10", fact:"Stream of consciousness is a writing style that mimics a character's flow of thoughts without structure, used by James Joyce and Virginia Woolf.", q:"What is stream of consciousness writing?", a:"Writing that mimics the natural flow of a character's thoughts!" }
+  ],
+  world: [
+    { id:"g2_w1", fact:"Plate tectonics explains how Earth's crust is made of giant puzzle pieces that slowly move — causing earthquakes, volcanoes, and mountains.", q:"What is plate tectonics?", a:"The theory that Earth's crust is made of moving giant puzzle pieces!" },
+    { id:"g2_w2", fact:"The ozone layer in the upper atmosphere absorbs most of the sun's harmful ultraviolet radiation, shielding all life on Earth.", q:"What does the ozone layer protect us from?", a:"The sun's harmful ultraviolet radiation!" },
+    { id:"g2_w3", fact:"Photosynthesis is how plants make food — they turn sunlight, water, and carbon dioxide into glucose and oxygen.", q:"What is photosynthesis?", a:"How plants turn sunlight, water, and CO2 into food and oxygen!" },
+    { id:"g2_w4", fact:"The Ring of Fire is a zone around the Pacific Ocean where most of the world's earthquakes and volcanic eruptions occur.", q:"Where do most of Earth's earthquakes and volcanoes occur?", a:"Along the Ring of Fire around the Pacific Ocean!" },
+    { id:"g2_w5", fact:"Climate and weather are different — weather is what is happening today, while climate is the long-term pattern over decades.", q:"What is the difference between weather and climate?", a:"Weather is today; climate is the long-term pattern!" },
+    { id:"g2_w6", fact:"Urbanization is the global trend of people moving from rural areas to cities. Today, more than half of all humans live in cities.", q:"What does urbanization mean?", a:"People moving from rural areas to cities!" },
+    { id:"g2_w7", fact:"Biodiversity refers to the variety of life in an ecosystem. More biodiversity makes the ecosystem healthier and more resilient.", q:"What is biodiversity?", a:"The variety of life in an ecosystem!" },
+    { id:"g2_w8", fact:"The International Space Station orbits Earth at about 250 miles up and has been continuously inhabited since the year 2000.", q:"How high above Earth does the International Space Station orbit?", a:"About 250 miles up!" },
+    { id:"g2_w9", fact:"Economic systems like capitalism and socialism are different ways that societies organize the production and sharing of goods and services.", q:"What are economic systems?", a:"Different ways societies organize production and sharing of goods!" },
+    { id:"g2_w10", fact:"The Gulf Stream is a powerful warm ocean current in the Atlantic that flows north and makes the climate of Western Europe milder.", q:"What does the Gulf Stream do?", a:"Carries warm water north and makes Western Europe's climate milder!" }
+  ],
+  music: [
+    { id:"g2_m1", fact:"Polyrhythm is when two or more different rhythms are played at the same time simultaneously — it is common in West African and Latin music.", q:"What is polyrhythm?", a:"Two or more different rhythms played at the same time!" },
+    { id:"g2_m2", fact:"The blues is a musical form that originated in the American South in the late 1800s, built on a 12-bar harmonic structure.", q:"Where did the blues originate?", a:"The American South in the late 1800s!" },
+    { id:"g2_m3", fact:"Music theory is the language of music — it describes scales, chords, intervals, and keys so musicians can communicate and write music down.", q:"What is music theory?", a:"The language system that describes how music works!" },
+    { id:"g2_m4", fact:"The pentatonic scale uses just five notes and is found in the folk music of almost every culture on Earth — it is universal.", q:"How many notes does the pentatonic scale use?", a:"Five notes!" },
+    { id:"g2_m5", fact:"Timbre (pronounced TAM-ber) is the quality that makes a violin and a flute sound different even when playing the exact same note.", q:"What is timbre?", a:"The quality that makes different instruments sound different on the same note!" },
+    { id:"g2_m6", fact:"Electronic music was born in the mid-20th century with the invention of the synthesizer, an instrument that generates sound electronically.", q:"What instrument created electronic music?", a:"The synthesizer!" },
+    { id:"g2_m7", fact:"A leitmotif is a musical theme linked to a character or idea, repeated throughout a composition. John Williams uses them in Star Wars.", q:"What is a leitmotif?", a:"A musical theme linked to a character that repeats throughout a work!" },
+    { id:"g2_m8", fact:"In the Baroque period (1600–1750), composers like Bach and Handel developed complex musical forms that still influence music today.", q:"Who were famous composers of the Baroque period?", a:"Bach and Handel!" },
+    { id:"g2_m9", fact:"The resonance of a concert hall affects how music sounds — architects spend years carefully designing spaces for perfect acoustics.", q:"What is acoustics?", a:"How sound behaves in a space!" },
+    { id:"g2_m10", fact:"The modal system used different seven-note scales called modes centuries before the modern major and minor keys became standard.", q:"What were the musical scales called that were used before major and minor keys?", a:"Modes!" }
+  ]
+},
+
+// ─── 3RD GRADE ────────────────────────────────────────────────────────────────
+grade3: {
+  animals: [
+    { id:"g3_a1", fact:"Convergent evolution is when unrelated species develop similar traits because they live in similar environments — sharks and dolphins both evolved streamlined bodies independently.", q:"What is convergent evolution?", a:"When unrelated species independently develop similar traits!" },
+    { id:"g3_a2", fact:"Tardigrades (water bears) are microscopic animals that can survive in outer space, extreme temperatures, and radiation that would kill virtually all other life.", q:"What makes tardigrades remarkable survivors?", a:"They can survive outer space, extreme temperatures, and radiation!" },
+    { id:"g3_a3", fact:"Cephalopods like octopuses and squid have neurons distributed throughout their arms — each arm can process information semi-independently.", q:"What is unusual about octopus neurons?", a:"They are distributed throughout each arm, which can think semi-independently!" },
+    { id:"g3_a4", fact:"The axolotl is a salamander that retains juvenile features as an adult — and can regenerate entire limbs, and even parts of its heart and brain.", q:"What remarkable ability does the axolotl have?", a:"It can regenerate lost limbs and even parts of its heart and brain!" },
+    { id:"g3_a5", fact:"Mutualistic co-evolution is when two species evolve together in ways that benefit both — the yucca plant and yucca moth are completely dependent on each other.", q:"What is mutualistic co-evolution?", a:"When two species evolve together in ways that benefit both!" },
+    { id:"g3_a6", fact:"Eusociality describes species where most individuals never reproduce and instead devote their lives to raising the young of others — bees and ants are examples.", q:"What is eusociality?", a:"When most individuals never reproduce but help raise others' young!" },
+    { id:"g3_a7", fact:"The waggle dance of honeybees is a form of symbolic communication — it encodes both direction and distance to food, relative to the sun.", q:"What information does the honeybee waggle dance communicate?", a:"Direction and distance to food, relative to the sun!" },
+    { id:"g3_a8", fact:"Epigenetics studies how environment and experiences can switch genes on or off without changing DNA's sequence — inherited experiences.", q:"What does epigenetics study?", a:"How environment can switch genes on or off without changing DNA!" },
+    { id:"g3_a9", fact:"Animal cognition research shows crows can use multiple tools in sequence, plan ahead, and show metacognition — thinking about their own thinking.", q:"What advanced mental abilities have crows demonstrated?", a:"Using tools in sequence, planning, and metacognition!" },
+    { id:"g3_a10", fact:"The Venus flytrap generates action potentials (electrical signals) to trigger its trap — it counts triggers to avoid wasting energy on raindrops.", q:"How does the Venus flytrap avoid closing on raindrops?", a:"It counts electrical triggers and only closes after two within 20 seconds!" }
+  ],
+  art: [
+    { id:"g3_ar1", fact:"Semiotics is the study of signs and symbols and how they create meaning — it connects art, language, and philosophy.", q:"What is semiotics?", a:"The study of signs and symbols and how they create meaning!" },
+    { id:"g3_ar2", fact:"Post-modernism in art rejected absolute truths and single meanings, embracing irony, pastiche, and multiple interpretations simultaneously.", q:"What did postmodernism in art reject?", a:"Absolute truths and single meanings!" },
+    { id:"g3_ar3", fact:"The concept of the sublime describes something so vast and powerful it overwhelms human comprehension — romantic painters tried to capture it.", q:"What is the artistic concept of the sublime?", a:"Something so vast and powerful it overwhelms human comprehension!" },
+    { id:"g3_ar4", fact:"Site-specific art is created for a particular location and cannot exist separately from it — the artwork is in dialogue with its environment.", q:"What is site-specific art?", a:"Art created for and inseparable from a particular location!" },
+    { id:"g3_ar5", fact:"Linear perspective, developed in 15th-century Florence, transformed painting by creating the mathematical illusion of three-dimensional depth on flat surfaces.", q:"What did linear perspective allow artists to do?", a:"Create a mathematical illusion of 3D depth on flat surfaces!" },
+    { id:"g3_ar6", fact:"Art criticism uses formal analysis (composition, color, line) and contextual analysis (history, society) to interpret and evaluate artworks.", q:"What two types of analysis does art criticism use?", a:"Formal analysis and contextual analysis!" },
+    { id:"g3_ar7", fact:"Iconography is the study of symbols in visual art — for example, a lamb in medieval European painting traditionally represented Christ.", q:"What is iconography?", a:"The study of symbols and their meanings in visual art!" },
+    { id:"g3_ar8", fact:"Marcel Duchamp's readymades challenged the very definition of art by placing ordinary objects (like a urinal) in a gallery and calling them art.", q:"What did Marcel Duchamp's readymades challenge?", a:"The very definition of what art is!" },
+    { id:"g3_ar9", fact:"The Golden Ratio (approximately 1.618) is a mathematical proportion found in nature and used by artists and architects across many cultures and centuries.", q:"What is the Golden Ratio?", a:"A mathematical proportion (about 1.618) found in nature and used in art and architecture!" },
+    { id:"g3_ar10", fact:"Bauhaus design philosophy argued that form follows function — that good design must be both beautiful and practically purposeful.", q:"What is the Bauhaus design principle 'form follows function'?", a:"Good design must be both beautiful and practically useful!" }
+  ],
+  numbers: [
+    { id:"g3_n1", fact:"Chaos theory studies how tiny differences in starting conditions can lead to wildly different outcomes — this is called the butterfly effect.", q:"What is the butterfly effect in chaos theory?", a:"Tiny differences in starting conditions can cause wildly different outcomes!" },
+    { id:"g3_n2", fact:"Non-Euclidean geometry describes curved spaces where normal rules break down. On a sphere, the angles of a triangle add up to more than 180°.", q:"What is non-Euclidean geometry?", a:"Geometry that describes curved spaces where flat-plane rules don't apply!" },
+    { id:"g3_n3", fact:"Gödel's incompleteness theorems proved that in any mathematical system, there will always be true statements that cannot be proven within that system.", q:"What did Gödel's incompleteness theorems prove?", a:"In any math system, some true statements can never be proven!" },
+    { id:"g3_n4", fact:"Topology studies shapes' properties that don't change when stretched or bent. A coffee mug and a donut are topologically identical — both have exactly one hole.", q:"What does topology study?", a:"Properties of shapes that don't change when stretched or bent!" },
+    { id:"g3_n5", fact:"Fractals are infinitely complex patterns that look the same at every scale — the Mandelbrot set is famous, and fractals appear in coastlines and snowflakes.", q:"What makes a fractal special?", a:"It looks the same at every scale, no matter how much you zoom in!" },
+    { id:"g3_n6", fact:"Bayes' theorem is a formula for updating the probability of a belief when new evidence arrives — it is fundamental to statistics and AI.", q:"What does Bayes' theorem help us do?", a:"Update the probability of a belief when new evidence arrives!" },
+    { id:"g3_n7", fact:"The P vs NP problem asks whether every problem that can be quickly verified can also be quickly solved — it is one of math's greatest unsolved mysteries.", q:"What is the P vs NP problem?", a:"Whether every quickly-verifiable problem can also be quickly solved!" },
+    { id:"g3_n8", fact:"Number theory, the study of integers and their properties, underlies modern cryptography — the math that keeps internet passwords and banking secure.", q:"What practical use does number theory have today?", a:"It underlies cryptography, keeping internet passwords and banking secure!" },
+    { id:"g3_n9", fact:"Alan Turing proved the halting problem: no computer program can determine for every possible program whether it will run forever or eventually stop.", q:"What is the halting problem?", a:"No program can determine whether any arbitrary program will stop or run forever!" },
+    { id:"g3_n10", fact:"Complex numbers combine a real part and an imaginary part (using the square root of -1, written as i) and are essential in physics and engineering.", q:"What makes complex numbers unusual?", a:"They combine real numbers with imaginary numbers using the square root of -1!" }
+  ],
+  stories: [
+    { id:"g3_st1", fact:"Intertextuality is when a work of literature references or transforms another — T.S. Eliot's The Waste Land is famous for dense literary allusions.", q:"What is intertextuality?", a:"When a work references or transforms another work of literature!" },
+    { id:"g3_st2", fact:"Structuralism argues that all stories share deep underlying structures — Claude Lévi-Strauss showed that myths worldwide have similar binary oppositions.", q:"What does structuralism argue about all stories?", a:"They share deep underlying structures!" },
+    { id:"g3_st3", fact:"The postcolonial literary movement examines how colonial histories have shaped language, identity, and storytelling in formerly colonized countries.", q:"What does postcolonial literature examine?", a:"How colonial histories shaped language and storytelling!" },
+    { id:"g3_st4", fact:"Epistolary novels are told through documents like letters, diary entries, or emails — Dracula and Frankenstein are both epistolary novels.", q:"What is an epistolary novel?", a:"A novel told through letters, diary entries, or documents!" },
+    { id:"g3_st5", fact:"Free verse poetry has no fixed meter or rhyme scheme — it relies on the natural rhythms of speech. Walt Whitman popularized it in English.", q:"What makes free verse poetry different from traditional poetry?", a:"It has no fixed meter or rhyme scheme!" },
+    { id:"g3_st6", fact:"Metafiction is storytelling that self-consciously references its own fictional nature. Don Quixote (1605) is often considered the first metafictional novel.", q:"What is metafiction?", a:"Storytelling that self-consciously references its own fictional nature!" },
+    { id:"g3_st7", fact:"The oral epics — The Iliad, The Odyssey, The Epic of Gilgamesh — were composed to be memorized and performed, before writing existed.", q:"What did oral epics like The Iliad have in common?", a:"They were composed to be memorized and performed aloud!" },
+    { id:"g3_st8", fact:"An author's purpose can be to persuade, inform, or entertain — but the most lasting literature often does all three at once while exploring universal human experiences.", q:"What are the three possible purposes an author might have?", a:"To persuade, to inform, and to entertain!" },
+    { id:"g3_st9", fact:"The concept of the unreliable narrator forces readers to actively question what they are told and construct their own interpretation of events.", q:"What does the unreliable narrator force readers to do?", a:"Actively question the story and form their own interpretation!" },
+    { id:"g3_st10", fact:"Magical realism — used by Gabriel García Márquez — blurs the boundary between the real and the fantastic in a matter-of-fact way, revealing deeper truths.", q:"How does magical realism present fantastical events?", a:"In a matter-of-fact way, as if they are completely normal!" }
+  ],
+  world: [
+    { id:"g3_w1", fact:"The Anthropocene is a proposed geological epoch defined by the significant and lasting human impact on Earth's geology, ecosystems, and atmosphere.", q:"What is the Anthropocene?", a:"A proposed geological epoch defined by significant human impact on Earth!" },
+    { id:"g3_w2", fact:"Geopolitics studies how geography, natural resources, and physical features of the Earth shape the power relationships between nations.", q:"What does geopolitics study?", a:"How geography and resources shape power relationships between nations!" },
+    { id:"g3_w3", fact:"Carrying capacity is the maximum population size an environment can sustainably support given its available food, water, and space.", q:"What is carrying capacity?", a:"The maximum population an environment can sustainably support!" },
+    { id:"g3_w4", fact:"Epidemiology is the study of how diseases spread through populations — understanding transmission is key to containing outbreaks.", q:"What is epidemiology?", a:"The study of how diseases spread through populations!" },
+    { id:"g3_w5", fact:"The Columbian Exchange was the widespread transfer of plants, animals, culture, and diseases between the Americas and the Old World after 1492.", q:"What was the Columbian Exchange?", a:"The transfer of plants, animals, culture, and diseases between the Americas and Europe after 1492!" },
+    { id:"g3_w6", fact:"Systems thinking views the world as interconnected systems where changing one part affects the whole — essential for understanding climate and ecology.", q:"What is systems thinking?", a:"Viewing the world as interconnected systems where changing one part affects everything!" },
+    { id:"g3_w7", fact:"The tragedy of the commons describes how individuals acting in their own self-interest can deplete shared resources — a key challenge in environmental policy.", q:"What is the tragedy of the commons?", a:"When individuals acting selfishly deplete shared resources!" },
+    { id:"g3_w8", fact:"International humanitarian law, developed through the Geneva Conventions, sets rules for how wars must be conducted to limit civilian suffering.", q:"What do the Geneva Conventions establish?", a:"Rules for how wars must be conducted to limit suffering!" },
+    { id:"g3_w9", fact:"Biogeography studies the distribution of species across geography and time, revealing how continental drift isolated populations and drove evolution.", q:"What does biogeography study?", a:"The distribution of species across geography and time!" },
+    { id:"g3_w10", fact:"Zoning laws determine how land in a city can be used — for homes, businesses, or industry. Urban planning shapes how communities develop and who can access them.", q:"What do zoning laws determine?", a:"How land in a city can be used — homes, businesses, or industry!" }
+  ],
+  music: [
+    { id:"g3_m1", fact:"Ethnomusicology is the study of music from different cultures and how it connects to society, identity, and human experience around the world.", q:"What is ethnomusicology?", a:"The study of music from different cultures and its connection to society!" },
+    { id:"g3_m2", fact:"Serialism (twelve-tone technique) was developed by Arnold Schoenberg — it uses all 12 notes of the chromatic scale in a fixed sequence, avoiding a tonal center.", q:"Who developed twelve-tone serialism?", a:"Arnold Schoenberg!" },
+    { id:"g3_m3", fact:"Musical pitch corresponds to frequency — the number of vibrations per second (hertz). Instruments are tuned to specific frequencies that create harmonious relationships.", q:"What does musical pitch correspond to in physics?", a:"Frequency — the number of vibrations per second!" },
+    { id:"g3_m4", fact:"Musique concrète, pioneered by Pierre Schaeffer in the 1940s, created compositions from recorded real-world sounds (traffic, machines) manipulated on tape.", q:"What is musique concrète?", a:"Music created from recorded real-world sounds manipulated on tape!" },
+    { id:"g3_m5", fact:"The West African griot tradition combines music, storytelling, and history — griots serve as living archives of their community's oral heritage.", q:"What role do griots play in West African culture?", a:"They combine music and storytelling to preserve oral history!" },
+    { id:"g3_m6", fact:"Minimalist composers like Philip Glass and Steve Reich use simple repeating patterns that gradually evolve, exploring how subtle change in repetition affects perception.", q:"What do minimalist composers like Philip Glass use?", a:"Simple repeating patterns that gradually evolve!" },
+    { id:"g3_m7", fact:"Pythagoras discovered that the most harmonious musical intervals correspond to simple mathematical ratios — connecting music and mathematics since antiquity.", q:"What did Pythagoras discover about music and mathematics?", a:"Harmonious musical intervals correspond to simple mathematical ratios!" },
+    { id:"g3_m8", fact:"Microtonality uses intervals smaller than the standard half-step — Turkish maqam and Indian raga traditions use these subtle variations as fundamental parts of their sound.", q:"What is microtonality?", a:"Using musical intervals smaller than the standard half-step!" },
+    { id:"g3_m9", fact:"Music cognition research shows music activates more areas of the brain simultaneously than almost any other human activity.", q:"What does music cognition research reveal about music and the brain?", a:"Music activates more brain areas simultaneously than almost any other activity!" },
+    { id:"g3_m10", fact:"The concept of musical modes predates modern major and minor keys — Dorian, Phrygian, and Lydian modes create distinct emotional colors used in folk, jazz, and film scores.", q:"What are musical modes?", a:"Ancient seven-note scales that predate modern major and minor keys!" }
+  ]
+}
+
+}; // end FACTS
 </script>
 <script>
 // ═══════════════════════════════════════
-// STATE MANAGEMENT
+// GLOBAL STATE
 // ═══════════════════════════════════════
+const db = firebase.firestore();
+
+let activeUserId   = null;
+let activeChildIdx = 0;
+let activeName     = 'Friend';
+let activeGrade    = 'K';
+let ACTIVE_FACTS   = null;
+
+let STATE = null;
+
+function stateKey() { return 'eg_state_' + activeChildIdx; }
+
 function todayStr() {
   const d = new Date();
-  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
 }
 
 function loadState() {
-  try { return JSON.parse(localStorage.getItem('eg_state') || 'null'); } catch(e) { return null; }
+  try { return JSON.parse(localStorage.getItem(stateKey()) || 'null'); } catch(e) { return null; }
 }
-function saveState(s) { localStorage.setItem('eg_state', JSON.stringify(s)); }
+function saveState(s) { localStorage.setItem(stateKey(), JSON.stringify(s)); }
 
 function defaultState() {
   return {
@@ -431,31 +803,26 @@ function defaultState() {
 }
 
 function defaultDayState(date, stats) {
-  // Pick one unused fact per category
   const assigned = {};
   for (const cat of CAT_KEYS) {
-    const pool = FACTS[cat].filter(f => !stats.usedFacts.includes(f.id));
-    const avail = pool.length > 0 ? pool : FACTS[cat]; // recycle if exhausted
+    const pool = ACTIVE_FACTS[cat].filter(f => !stats.usedFacts.includes(f.id));
+    const avail = pool.length > 0 ? pool : ACTIVE_FACTS[cat];
     assigned[cat] = avail[Math.floor(Math.random() * avail.length)].id;
   }
-  // Record which pie pieces she already has at start of day
   const startingPieces = CAT_KEYS.filter(k => stats.currentPie[k]);
   return {
     date,
     assigned,
-    learned: {},       // cat -> true if she chose to learn it
-    quizResults: {},   // cat -> 'right'|'wrong'|null
-    startingPieces,    // can't earn these today
+    learned: {},
+    quizResults: {},
+    startingPieces,
     quizComplete: false
   };
 }
 
-let STATE = loadState() || defaultState();
-
 function ensureToday() {
   const today = todayStr();
   if (!STATE.today || STATE.today.date !== today) {
-    // Finalize yesterday if needed
     if (STATE.today && STATE.today.date !== today) {
       finalizeDay(STATE.today);
     }
@@ -465,23 +832,15 @@ function ensureToday() {
 }
 
 function finalizeDay(day) {
-  // Already finalized? Skip
   if (STATE.stats.calendar[day.date] && STATE.stats.calendar[day.date].finalized) return;
-  
   const piecesEarned = CAT_KEYS.filter(cat =>
     day.quizResults[cat] === 'right' && !day.startingPieces.includes(cat)
   );
   const factsLearned = CAT_KEYS.filter(cat => day.learned[cat]).length;
   const questionsRight = CAT_KEYS.filter(cat => day.quizResults[cat] === 'right').length;
-  
-  STATE.stats.calendar[day.date] = {
-    piecesEarned,
-    factsLearned,
-    questionsRight,
-    finalized: true
-  };
-  
-  // Update streak
+
+  STATE.stats.calendar[day.date] = { piecesEarned, factsLearned, questionsRight, finalized: true };
+
   const lastDate = STATE.stats.lastPlayedDate;
   if (lastDate) {
     const last = new Date(lastDate + 'T12:00:00');
@@ -493,7 +852,6 @@ function finalizeDay(day) {
     STATE.stats.streak = 1;
   }
   if (factsLearned > 0) STATE.stats.lastPlayedDate = day.date;
-  
   saveState(STATE);
 }
 
@@ -501,7 +859,6 @@ function markLearned(cat) {
   ensureToday();
   if (STATE.today.learned[cat]) return;
   STATE.today.learned[cat] = true;
-  // Track used fact
   const fid = STATE.today.assigned[cat];
   if (!STATE.stats.usedFacts.includes(fid)) {
     STATE.stats.usedFacts.push(fid);
@@ -518,10 +875,8 @@ function markQuizResult(cat, result, isBigQuiz) {
     if (result === 'right') {
       STATE.stats.totalQuestionsRight++;
       STATE.stats.catStats[cat].right++;
-      // Award pie piece if she didn't start the day with it
       if (!STATE.today.startingPieces.includes(cat) && !STATE.stats.currentPie[cat]) {
         STATE.stats.currentPie[cat] = true;
-        // Check if pie is complete
         if (CAT_KEYS.every(k => STATE.stats.currentPie[k])) {
           STATE.stats.completedPies++;
           CAT_KEYS.forEach(k => STATE.stats.currentPie[k] = false);
@@ -531,7 +886,6 @@ function markQuizResult(cat, result, isBigQuiz) {
       }
     }
   } else {
-    // Big quiz just tracks stats
     if (result === 'right') {
       STATE.stats.totalQuestionsRight++;
       STATE.stats.catStats[cat].right++;
@@ -544,7 +898,7 @@ function markQuizResult(cat, result, isBigQuiz) {
 }
 
 function resetAll() {
-  localStorage.removeItem('eg_state');
+  localStorage.removeItem(stateKey());
   STATE = defaultState();
   ensureToday();
   renderHome();
@@ -557,8 +911,7 @@ function resetAll() {
 // ═══════════════════════════════════════
 function showScreen(name) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById('screen-'+name).classList.add('active');
-  // Update nav
+  document.getElementById('screen-' + name).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   const navMap = { home:'nav-home', pie:'nav-pie', stats:'nav-stats' };
   if (navMap[name]) document.getElementById(navMap[name]).classList.add('active');
@@ -583,79 +936,95 @@ function goQuiz(isBig) {
   showScreen('quiz');
 }
 
-function goBigQuiz() {
-  goQuiz(true);
-}
+function goBigQuiz() { goQuiz(true); }
 
 function confirmBack() {
   if (confirm('Leave the quiz? Your progress will be saved.')) showScreen('home');
 }
 
-// ═══════════════════════════════════════
-// HOME SCREEN
-// ═══════════════════════════════════════
+// ─── CHILD SELECTOR ────────────────────────────────────────────────────────────
+function renderChildSelect(children) {
+  let html = '';
+  const avatars = ['👧','👦','🧒','👶','🌟','🦋','🐱','🐶'];
+  children.forEach((child, idx) => {
+    const gradeLabel = GRADE_NAMES[child.grade || 'K'] || 'Kindergarten';
+    const av = avatars[idx % avatars.length];
+    html += '<div class="child-card" onclick="selectChild(' + idx + ')">' +
+      '<div class="cc-emoji">' + av + '</div>' +
+      '<div class="cc-name">' + child.name + '</div>' +
+      '<div class="cc-grade">' + gradeLabel + '</div>' +
+      '</div>';
+  });
+  document.getElementById('child-select-grid').innerHTML = html;
+}
+
+async function selectChild(idx) {
+  try {
+    const doc = await db.collection('users').doc(activeUserId).get();
+    const children = (doc.data() || {}).children || [];
+    activeChildIdx = idx;
+    activeName = children[idx].name || 'Friend';
+    activeGrade = children[idx].grade || 'K';
+    ACTIVE_FACTS = FACTS[activeGrade] || FACTS['K'];
+    initGame();
+  } catch(e) {
+    console.error('selectChild error', e);
+  }
+}
+
+// ─── HOME SCREEN ───────────────────────────────────────────────────────────────
 function renderHome() {
   ensureToday();
   const day = STATE.today;
   const stats = STATE.stats;
-  
-  // Greeting
+
   const hour = new Date().getHours();
   const greet = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
-  document.getElementById('home-greeting').innerHTML = `${greet},<br>Elliott! 🌟`;
-  
+  document.getElementById('home-greeting').innerHTML = greet + ',<br>' + activeName + '! 🌟';
+  document.getElementById('home-title').textContent = '🎓 ' + activeName + "'s Game";
+
   const dateOpts = { weekday:'long', month:'long', day:'numeric' };
   document.getElementById('home-date').textContent = new Date().toLocaleDateString('en-US', dateOpts);
-  
-  // Status
+
   const learnedCount = CAT_KEYS.filter(c => day.learned[c]).length;
   const quizzedCount = CAT_KEYS.filter(c => day.quizResults[c]).length;
-  const rightCount = CAT_KEYS.filter(c => day.quizResults[c]==='right').length;
-  
+  const rightCount   = CAT_KEYS.filter(c => day.quizResults[c]==='right').length;
+
   let statusHTML = '';
   if (learnedCount === 0) {
-    statusHTML = `<div class="status-pill">📖 No facts learned yet today</div>`;
+    statusHTML = '<div class="status-pill">📖 No facts learned yet today</div>';
   } else {
-    statusHTML = `<div class="status-pill" style="color:var(--animals);">✅ ${learnedCount} fact${learnedCount>1?'s':''} learned today</div>`;
+    statusHTML = '<div class="status-pill" style="color:var(--animals);">✅ ' + learnedCount + ' fact' + (learnedCount>1?'s':'') + ' learned today</div>';
   }
   if (quizzedCount > 0) {
-    statusHTML += ` <div class="status-pill" style="color:var(--numbers);">⭐ ${rightCount}/${quizzedCount} right in quiz</div>`;
+    statusHTML += ' <div class="status-pill" style="color:var(--numbers);">⭐ ' + rightCount + '/' + quizzedCount + ' right in quiz</div>';
   }
   document.getElementById('home-status').innerHTML = statusHTML;
-  
-  // Mini pie preview
-  const pieHTML = `
-    <div style="display:flex;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:14px 18px;margin-bottom:8px;">
-      <canvas id="mini-pie" width="60" height="60"></canvas>
-      <div>
-        <div style="font-weight:800;font-size:15px;">Current Pie</div>
-        <div style="font-size:13px;color:var(--muted);">${CAT_KEYS.filter(k=>stats.currentPie[k]).length} / 6 pieces</div>
-        <div style="font-size:13px;color:var(--muted);">${stats.completedPies} full pie${stats.completedPies!==1?'s':''} earned (goal: 10 🎁)</div>
-      </div>
-    </div>`;
+
+  const pieHTML = '<div style="display:flex;align-items:center;gap:12px;background:var(--card);border-radius:14px;padding:14px 18px;margin-bottom:8px;">' +
+    '<canvas id="mini-pie" width="60" height="60"></canvas>' +
+    '<div><div style="font-weight:800;font-size:15px;">Current Pie</div>' +
+    '<div style="font-size:13px;color:var(--muted);">' + CAT_KEYS.filter(k=>stats.currentPie[k]).length + ' / 6 pieces</div>' +
+    '<div style="font-size:13px;color:var(--muted);">' + stats.completedPies + ' full pie' + (stats.completedPies!==1?'s':'') + ' earned (goal: 10 🎁)</div>' +
+    '</div></div>';
   document.getElementById('home-pie-mini').innerHTML = pieHTML;
   setTimeout(() => drawPie('mini-pie', stats.currentPie, 30, 3), 50);
 }
 
-// ═══════════════════════════════════════
-// PIE DRAWING (SVG on Canvas)
-// ═══════════════════════════════════════
+// ─── PIE DRAWING ──────────────────────────────────────────────────────────────
 function drawPie(canvasId, pieState, r, lineW) {
   const canvas = document.getElementById(canvasId);
   if (!canvas) return;
   const ctx = canvas.getContext('2d');
   const cx = canvas.width / 2, cy = canvas.height / 2;
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  
   const slice = (Math.PI * 2) / 6;
-  const start = -Math.PI / 2; // top
-  
+  const start = -Math.PI / 2;
   CAT_KEYS.forEach((cat, i) => {
     const sa = start + i * slice;
     const ea = sa + slice;
     const color = CATEGORIES[cat].color;
     const filled = pieState[cat];
-    
     ctx.beginPath();
     ctx.moveTo(cx, cy);
     ctx.arc(cx, cy, r, sa, ea);
@@ -666,67 +1035,55 @@ function drawPie(canvasId, pieState, r, lineW) {
     ctx.lineWidth = lineW || 2;
     ctx.stroke();
   });
-  
-  // Center circle
   ctx.beginPath();
   ctx.arc(cx, cy, r * 0.28, 0, Math.PI*2);
   ctx.fillStyle = '#1a1a2e';
   ctx.fill();
 }
 
-// ═══════════════════════════════════════
-// LEARN SCREEN
-// ═══════════════════════════════════════
+// ─── LEARN SCREEN ─────────────────────────────────────────────────────────────
 function renderLearn() {
   ensureToday();
   const day = STATE.today;
   let html = '';
-  
   const learnedCount = CAT_KEYS.filter(c => day.learned[c]).length;
-  html += `<p style="font-size:14px;color:var(--muted);margin-bottom:16px;font-weight:600;">Tap a category to learn today's fact! (${learnedCount}/6 learned)</p>`;
-  
+  html += '<p style="font-size:14px;color:var(--muted);margin-bottom:16px;font-weight:600;">Tap a category to learn today\'s fact! (' + learnedCount + '/6 learned)</p>';
+
   CAT_KEYS.forEach(cat => {
     const catInfo = CATEGORIES[cat];
-    const fact = FACTS[cat].find(f => f.id === day.assigned[cat]);
+    const fact = ACTIVE_FACTS[cat].find(f => f.id === day.assigned[cat]);
     const learned = day.learned[cat];
-    
-    html += `
-      <div class="card cat-card c-${cat}" onclick="toggleFact('${cat}')">
-        <div class="cat-icon">${catInfo.emoji}</div>
-        <div class="cat-info">
-          <div class="cat-name" style="color:${catInfo.color};">${catInfo.name}</div>
-          <div class="cat-sub">${catInfo.desc}</div>
-        </div>
-        <div class="cat-badge">${learned ? '✅' : '👆'}</div>
-      </div>
-      <div class="fact-reveal ${learned ? 'show' : ''}" id="fact-${cat}">
-        <div style="font-size:13px;font-weight:800;color:${catInfo.color};text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">${catInfo.emoji} ${catInfo.name}</div>
-        <div style="font-size:17px;line-height:1.55;">${fact ? fact.fact : ''}</div>
-        ${!learned ? `<div class="fact-actions">
-          <button class="btn" style="background:${catInfo.color};" onclick="event.stopPropagation();learnFact('${cat}')">⭐ I learned it!</button>
-          <button class="btn btn-gray" onclick="event.stopPropagation();toggleFact('${cat}')">Close</button>
-        </div>` : `<div style="margin-top:10px;font-size:14px;color:var(--muted);font-weight:600;">✅ Learned! Answer a quiz question later to earn your pie piece.</div>`}
-      </div>`;
+    html += '<div class="card cat-card c-' + cat + '" onclick="toggleFact(\'' + cat + '\')">' +
+      '<div class="cat-icon">' + catInfo.emoji + '</div>' +
+      '<div class="cat-info"><div class="cat-name" style="color:' + catInfo.color + ';">' + catInfo.name + '</div>' +
+      '<div class="cat-sub">' + catInfo.desc + '</div></div>' +
+      '<div class="cat-badge">' + (learned ? '✅' : '👆') + '</div></div>' +
+      '<div class="fact-reveal ' + (learned ? 'show' : '') + '" id="fact-' + cat + '">' +
+      '<div style="font-size:13px;font-weight:800;color:' + catInfo.color + ';text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">' + catInfo.emoji + ' ' + catInfo.name + '</div>' +
+      '<div style="font-size:17px;line-height:1.55;">' + (fact ? fact.fact : '') + '</div>' +
+      (!learned ? '<div class="fact-actions">' +
+        '<button class="btn" style="background:' + catInfo.color + ';" onclick="event.stopPropagation();learnFact(\'' + cat + '\')">⭐ I learned it!</button>' +
+        '<button class="btn btn-gray" onclick="event.stopPropagation();toggleFact(\'' + cat + '\')">Close</button>' +
+        '</div>'
+        : '<div style="margin-top:10px;font-size:14px;color:var(--muted);font-weight:600;">✅ Learned! Come back for your quiz question.</div>') +
+      '</div>';
   });
-  
+
   if (learnedCount > 0) {
-    html += `<div class="divider"></div><button class="btn btn-primary" onclick="goQuiz()">🎯 Go to Today's Quiz!</button>`;
+    html += '<div class="divider"></div><button class="btn btn-primary" onclick="goQuiz()">🎯 Go to Today\'s Quiz!</button>';
   }
-  
   document.getElementById('learn-body').innerHTML = html;
 }
 
 function toggleFact(cat) {
-  const el = document.getElementById('fact-'+cat);
-  el.classList.toggle('show');
+  document.getElementById('fact-' + cat).classList.toggle('show');
 }
 
 function learnFact(cat) {
   markLearned(cat);
   renderLearn();
-  // Mini celebrate
   const catInfo = CATEGORIES[cat];
-  celebrate(`${catInfo.emoji} New Fact Learned!`, `Great job learning about ${catInfo.name}! Come back later for your quiz question.`);
+  celebrate(catInfo.emoji + ' New Fact Learned!', 'Great job learning about ' + catInfo.name + '! Come back later for your quiz question.');
 }
 </script>
 <script>
@@ -748,15 +1105,13 @@ function renderQuiz(isBig) {
   quizAnswerShown = false;
 
   if (isBig) {
-    // Big quiz: all facts ever used, shuffled
     const used = STATE.stats.usedFacts;
     let pool = [];
     CAT_KEYS.forEach(cat => {
-      FACTS[cat].forEach(f => {
-        if (used.includes(f.id)) pool.push({ ...f, cat });
+      ACTIVE_FACTS[cat].forEach(f => {
+        if (used.includes(f.id)) pool.push(Object.assign({}, f, {cat}));
       });
     });
-    // shuffle
     for (let i = pool.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i+1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
@@ -764,13 +1119,12 @@ function renderQuiz(isBig) {
     quizQueue = pool.slice(0, Math.min(pool.length, 20));
     document.getElementById('quiz-title').textContent = '🔀 Big Quiz';
   } else {
-    // Daily quiz: only learned facts
     const day = STATE.today;
     quizQueue = CAT_KEYS
       .filter(cat => day.learned[cat])
       .map(cat => {
-        const f = FACTS[cat].find(f => f.id === day.assigned[cat]);
-        return { ...f, cat };
+        const f = ACTIVE_FACTS[cat].find(f => f.id === day.assigned[cat]);
+        return Object.assign({}, f, {cat});
       });
     document.getElementById('quiz-title').textContent = "Today's Quiz";
   }
@@ -780,13 +1134,13 @@ function renderQuiz(isBig) {
   document.getElementById('quiz-content').style.display = '';
 
   if (quizTotal === 0) {
-    document.getElementById('quiz-content').innerHTML = `
-      <div style="text-align:center;padding:40px 0;">
-        <div style="font-size:60px;margin-bottom:16px;">📖</div>
-        <div style="font-size:20px;font-weight:800;margin-bottom:8px;">No facts yet!</div>
-        <div style="font-size:15px;color:var(--muted);margin-bottom:24px;">Go learn some facts first, then come back for the quiz.</div>
-        <button class="btn btn-primary" onclick="goLearn()">⭐ Learn Facts</button>
-      </div>`;
+    document.getElementById('quiz-content').innerHTML =
+      '<div style="text-align:center;padding:40px 0;">' +
+      '<div style="font-size:60px;margin-bottom:16px;">📖</div>' +
+      '<div style="font-size:20px;font-weight:800;margin-bottom:8px;">No facts yet!</div>' +
+      '<div style="font-size:15px;color:var(--muted);margin-bottom:24px;">Go learn some facts first, then come back for the quiz.</div>' +
+      '<button class="btn btn-primary" onclick="goLearn()">⭐ Learn Facts</button>' +
+      '</div>';
     document.getElementById('quiz-progress-bar').style.display = 'none';
     return;
   }
@@ -795,35 +1149,28 @@ function renderQuiz(isBig) {
 }
 
 function renderQuizQuestion() {
-  if (quizIdx >= quizTotal) {
-    finishQuiz(); return;
-  }
+  if (quizIdx >= quizTotal) { finishQuiz(); return; }
   const item = quizQueue[quizIdx];
   const catInfo = CATEGORIES[item.cat];
-
-  // Update progress bar
   const pct = (quizIdx / quizTotal) * 100;
   document.getElementById('quiz-prog-fill').style.width = pct + '%';
-  document.getElementById('quiz-prog-text').textContent = `Question ${quizIdx+1} of ${quizTotal}`;
-  document.getElementById('quiz-score-text').textContent = `⭐ ${quizScore}`;
+  document.getElementById('quiz-prog-text').textContent = 'Question ' + (quizIdx+1) + ' of ' + quizTotal;
+  document.getElementById('quiz-score-text').textContent = '⭐ ' + quizScore;
 
-  // Already answered today?
   const alreadyAnswered = !quizIsBig && STATE.today.quizResults[item.cat];
-
-  document.getElementById('quiz-content').innerHTML = `
-    <div class="quiz-cat" style="color:${catInfo.color};">${catInfo.emoji} ${catInfo.name}</div>
-    <div class="quiz-q">${item.q}</div>
-    <div class="quiz-hint" style="font-size:13px;color:var(--muted);">${item.fact.substring(0,60)}...</div>
-    <div class="answer-reveal" id="ans-reveal" style="${alreadyAnswered?'display:block;':''}">${item.a}</div>
-    ${alreadyAnswered
-      ? `<div style="font-size:14px;color:var(--muted);margin-bottom:16px;">Already answered: <strong style="color:${STATE.today.quizResults[item.cat]==='right'?'var(--animals)':'#ef4444'}">${STATE.today.quizResults[item.cat]==='right'?'✅ Correct':'❌ Incorrect'}</strong></div>
-         <button class="btn btn-gray" onclick="advanceQuiz()">Next →</button>`
-      : `<button class="btn btn-primary" id="reveal-btn" onclick="revealAnswer()" style="${quizAnswerShown?'display:none;':''}">Show Answer 👀</button>
-         <div class="answer-btns" id="ans-btns" style="${quizAnswerShown?'':'display:none;'}">
-           <button class="btn btn-correct" onclick="submitAnswer('right')">✅ Got it right!</button>
-           <button class="btn btn-wrong" onclick="submitAnswer('wrong')">❌ Not yet</button>
-         </div>`
-    }`;
+  document.getElementById('quiz-content').innerHTML =
+    '<div class="quiz-cat" style="color:' + catInfo.color + ';">' + catInfo.emoji + ' ' + catInfo.name + '</div>' +
+    '<div class="quiz-q">' + item.q + '</div>' +
+    '<div class="quiz-hint" style="font-size:13px;color:var(--muted);">' + item.fact.substring(0,70) + '…</div>' +
+    '<div class="answer-reveal" id="ans-reveal" style="' + (alreadyAnswered?'display:block;':'') + '">' + item.a + '</div>' +
+    (alreadyAnswered
+      ? '<div style="font-size:14px;color:var(--muted);margin-bottom:16px;">Already answered: <strong style="color:' + (STATE.today.quizResults[item.cat]==='right'?'var(--animals)':'#ef4444') + '">' + (STATE.today.quizResults[item.cat]==='right'?'✅ Correct':'❌ Incorrect') + '</strong></div>' +
+        '<button class="btn btn-gray" onclick="advanceQuiz()">Next →</button>'
+      : '<button class="btn btn-primary" id="reveal-btn" onclick="revealAnswer()" style="' + (quizAnswerShown?'display:none;':'') + '">Show Answer 👀</button>' +
+        '<div class="answer-btns" id="ans-btns" style="' + (quizAnswerShown?'':'display:none;') + '">' +
+        '<button class="btn btn-correct" onclick="submitAnswer(\'right\')">✅ Got it right!</button>' +
+        '<button class="btn btn-wrong" onclick="submitAnswer(\'wrong\')">❌ Not yet</button>' +
+        '</div>');
   quizAnswerShown = false;
 }
 
@@ -837,19 +1184,16 @@ function revealAnswer() {
 function submitAnswer(result) {
   const item = quizQueue[quizIdx];
   if (result === 'right') quizScore++;
-
   const outcome = markQuizResult(item.cat, result, quizIsBig);
   quizIdx++;
-
   if (outcome === 'pie_complete') {
     advanceQuiz();
     setTimeout(() => celebrate('🥧 Full Pie Earned!!!',
-      `Amazing, Elliott! You filled the whole pie! You've now earned ${STATE.stats.completedPies} pie${STATE.stats.completedPies!==1?'s':''}. ${STATE.stats.completedPies>=10?'YOU EARNED A PRESENT! 🎁':'Get to 10 for a present! 🎁'}`), 300);
+      'Amazing, ' + activeName + '! You filled the whole pie! You\'ve earned ' + STATE.stats.completedPies + ' pie' + (STATE.stats.completedPies!==1?'s':'') + '. ' + (STATE.stats.completedPies>=10?'YOU EARNED A PRESENT! 🎁':'Get to 10 for a present! 🎁')), 300);
   } else if (outcome === 'piece_earned') {
     advanceQuiz();
     const catInfo = CATEGORIES[item.cat];
-    setTimeout(() => celebrate(`${catInfo.emoji} Pie Piece Earned!`,
-      `You earned the ${catInfo.name} piece for your pie! Keep going!`), 200);
+    setTimeout(() => celebrate(catInfo.emoji + ' Pie Piece Earned!', 'You earned the ' + catInfo.name + ' piece for your pie! Keep going!'), 200);
   } else {
     advanceQuiz();
   }
@@ -863,17 +1207,15 @@ function advanceQuiz() {
 function finishQuiz() {
   document.getElementById('quiz-content').style.display = 'none';
   document.getElementById('quiz-prog-fill').style.width = '100%';
-  document.getElementById('quiz-score-text').textContent = `⭐ ${quizScore}`;
-
+  document.getElementById('quiz-score-text').textContent = '⭐ ' + quizScore;
   const pct = quizTotal > 0 ? Math.round((quizScore/quizTotal)*100) : 0;
   let emoji = pct === 100 ? '🏆' : pct >= 70 ? '🌟' : pct >= 40 ? '😊' : '💪';
   let title = pct === 100 ? 'Perfect Score!!' : pct >= 70 ? 'Great Job!' : pct >= 40 ? 'Good Try!' : 'Keep Practicing!';
-  let sub = `You got ${quizScore} out of ${quizTotal} right (${pct}%)!`;
+  let sub = 'You got ' + quizScore + ' out of ' + quizTotal + ' right (' + pct + '%)!';
   if (!quizIsBig) {
     const pieces = CAT_KEYS.filter(c => STATE.today.quizResults[c]==='right' && !STATE.today.startingPieces.includes(c));
-    if (pieces.length > 0) sub += ` You earned ${pieces.length} new pie piece${pieces.length>1?'s':''}! 🥧`;
+    if (pieces.length > 0) sub += ' You earned ' + pieces.length + ' new pie piece' + (pieces.length>1?'s':'') + '! 🥧';
   }
-
   document.getElementById('quiz-done-emoji').textContent = emoji;
   document.getElementById('quiz-done-title').textContent = title;
   document.getElementById('quiz-done-sub').textContent = sub;
@@ -888,69 +1230,57 @@ function finishQuiz() {
 function renderPie() {
   ensureToday();
   const stats = STATE.stats;
-
-  // Draw big pie
   setTimeout(() => drawPie('pie-canvas', stats.currentPie, 120, 4), 50);
 
-  // Legend
   let legHTML = '';
   CAT_KEYS.forEach(cat => {
     const catInfo = CATEGORIES[cat];
     const has = stats.currentPie[cat];
-    legHTML += `
-      <div class="leg-item">
-        <div class="leg-dot" style="background:${has ? catInfo.color : catInfo.color+'44'};${has?'':'border:2px solid '+catInfo.color+'66;'}"></div>
-        <span style="${has?'':'color:var(--muted);'}">${catInfo.emoji} ${catInfo.name}</span>
-        ${has ? '<span style="color:var(--animals);">✓</span>' : ''}
-      </div>`;
+    legHTML += '<div class="leg-item">' +
+      '<div class="leg-dot" style="background:' + (has ? catInfo.color : catInfo.color+'44') + ';' + (has?'':'border:2px solid '+catInfo.color+'66;') + '"></div>' +
+      '<span style="' + (has?'':'color:var(--muted);') + '">' + catInfo.emoji + ' ' + catInfo.name + '</span>' +
+      (has ? '<span style="color:var(--animals);">✓</span>' : '') +
+      '</div>';
   });
   document.getElementById('pie-legend').innerHTML = legHTML;
 
-  // Pie tracker (10 pies)
   let trackerHTML = '';
   for (let i = 0; i < 10; i++) {
     const done = i < stats.completedPies;
-    trackerHTML += `<div class="pie-chip ${done?'done':'empty'}">${done?'🥧':'○'}</div>`;
+    trackerHTML += '<div class="pie-chip ' + (done?'done':'empty') + '">' + (done?'🥧':'○') + '</div>';
   }
   document.getElementById('pie-tracker').innerHTML = trackerHTML;
 
   const pct = Math.min(100, (stats.completedPies / 10) * 100);
   document.getElementById('pies-prog-fill').style.width = pct + '%';
-  document.getElementById('pies-prog-text').textContent = `${stats.completedPies} / 10 pies`;
-
-  // Calendar
+  document.getElementById('pies-prog-text').textContent = stats.completedPies + ' / 10 pies';
   renderCalendar();
 }
 
 function renderCalendar() {
   const now = new Date();
-  const year = now.getFullYear();
-  const month = now.getMonth();
+  const year = now.getFullYear(), month = now.getMonth();
   const monthNames = ['January','February','March','April','May','June','July','August','September','October','November','December'];
-  document.getElementById('cal-month-label').textContent = `${monthNames[month]} ${year}`;
+  document.getElementById('cal-month-label').textContent = monthNames[month] + ' ' + year;
 
-  const firstDay = new Date(year, month, 1).getDay(); // 0=Sun
+  const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month+1, 0).getDate();
   const todayD = now.getDate();
 
   let html = '';
-  // Empty cells for days before month start
   for (let i = 0; i < firstDay; i++) html += '<div class="cal-day empty"></div>';
-
   for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = `${year}-${String(month+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
     const calDay = STATE.stats.calendar[dateStr];
     const isToday = d === todayD;
-
     if (calDay && calDay.piecesEarned && calDay.piecesEarned.length > 0) {
       const dots = calDay.piecesEarned.map(cat =>
-        `<div class="mp" style="background:${CATEGORIES[cat].color};"></div>`).join('');
-      html += `<div class="cal-day has-data${isToday?' today':''}">
-        <span>${d}</span><div class="mini-pie">${dots}</div></div>`;
+        '<div class="mp" style="background:' + CATEGORIES[cat].color + ';"></div>').join('');
+      html += '<div class="cal-day has-data' + (isToday?' today':'') + '"><span>' + d + '</span><div class="mini-pie">' + dots + '</div></div>';
     } else if (calDay) {
-      html += `<div class="cal-day has-data${isToday?' today':''}" title="No pieces earned">${d}</div>`;
+      html += '<div class="cal-day has-data' + (isToday?' today':'') + '">' + d + '</div>';
     } else {
-      html += `<div class="cal-day${isToday?' today':''}">${d}</div>`;
+      html += '<div class="cal-day' + (isToday?' today':'') + '">' + d + '</div>';
     }
   }
   document.getElementById('cal-grid').innerHTML = html;
@@ -965,12 +1295,26 @@ function renderStats() {
   const total = stats.totalQuestionsAsked;
   const pct = total > 0 ? Math.round((stats.totalQuestionsRight / total) * 100) : 0;
 
-  document.getElementById('st-facts').textContent = stats.totalFactsLearned;
-  document.getElementById('st-right').textContent = stats.totalQuestionsRight;
-  document.getElementById('st-pies').textContent = stats.completedPies;
+  document.getElementById('st-facts').textContent  = stats.totalFactsLearned;
+  document.getElementById('st-right').textContent  = stats.totalQuestionsRight;
+  document.getElementById('st-pies').textContent   = stats.completedPies;
   document.getElementById('st-streak').textContent = stats.streak;
-  document.getElementById('st-pct').textContent = pct + '%';
-  document.getElementById('st-days').textContent = Object.keys(stats.calendar).length + (STATE.today && STATE.today.learned && CAT_KEYS.some(c => STATE.today.learned[c]) ? 1 : 0);
+  document.getElementById('st-pct').textContent    = pct + '%';
+  document.getElementById('st-days').textContent   = Object.keys(stats.calendar).length + (STATE.today && STATE.today.learned && CAT_KEYS.some(c => STATE.today.learned[c]) ? 1 : 0);
+
+  // Grade info + graduation button
+  const gradeName = GRADE_NAMES[activeGrade] || activeGrade;
+  const isMax = activeGrade === GRADE_KEYS[GRADE_KEYS.length - 1];
+  document.getElementById('grade-info-card').innerHTML =
+    '<div style="background:var(--card);border-radius:14px;padding:16px;margin-bottom:16px;">' +
+    '<div style="display:flex;align-items:center;gap:10px;margin-bottom:' + (isMax?'0':'12px') + ';">' +
+    '<div class="grade-badge">🎓 ' + gradeName + '</div>' +
+    '<div style="font-size:13px;color:var(--muted);">' + activeName + '\'s current grade</div>' +
+    '</div>' +
+    (!isMax
+      ? '<button class="btn btn-primary" onclick="graduateChild()">🎓 Graduate to Next Grade</button>'
+      : '<div style="font-size:14px;color:#f59e0b;font-weight:700;">🏆 Highest level reached!</div>') +
+    '</div>';
 
   // Category stats
   let catHTML = '';
@@ -982,35 +1326,70 @@ function renderStats() {
   sorted.forEach(cat => {
     const s = stats.catStats[cat];
     const catInfo = CATEGORIES[cat];
-    const pct = s.asked > 0 ? Math.round((s.right/s.asked)*100) : 0;
-    catHTML += `
-      <div style="margin-bottom:10px;">
-        <div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:4px;">
-          <span>${catInfo.emoji} ${catInfo.name}</span>
-          <span style="color:${catInfo.color};">${s.right}/${s.asked} (${pct}%)</span>
-        </div>
-        <div class="prog-bar"><div class="prog-fill" style="width:${pct}%;background:${catInfo.color};"></div></div>
-      </div>`;
+    const p = s.asked > 0 ? Math.round((s.right/s.asked)*100) : 0;
+    catHTML += '<div style="margin-bottom:10px;">' +
+      '<div style="display:flex;justify-content:space-between;font-size:14px;font-weight:700;margin-bottom:4px;">' +
+      '<span>' + catInfo.emoji + ' ' + catInfo.name + '</span>' +
+      '<span style="color:' + catInfo.color + ';">' + s.right + '/' + s.asked + ' (' + p + '%)</span>' +
+      '</div>' +
+      '<div class="prog-bar"><div class="prog-fill" style="width:' + p + '%;background:' + catInfo.color + ';"></div></div>' +
+      '</div>';
   });
   document.getElementById('cat-stats').innerHTML = catHTML || '<div style="color:var(--muted);font-size:14px;">No quiz data yet!</div>';
 
-  // All learned facts list
+  // All learned facts
   const usedIds = stats.usedFacts;
   let factList = '';
   if (usedIds.length === 0) {
     factList = '<div style="color:var(--muted);font-size:14px;">No facts learned yet — go learn some!</div>';
   } else {
     CAT_KEYS.forEach(cat => {
-      const catFacts = FACTS[cat].filter(f => usedIds.includes(f.id));
+      const catFacts = ACTIVE_FACTS[cat].filter(f => usedIds.includes(f.id));
       if (catFacts.length === 0) return;
       const catInfo = CATEGORIES[cat];
-      factList += `<div style="font-size:13px;font-weight:800;color:${catInfo.color};text-transform:uppercase;margin:12px 0 6px;">${catInfo.emoji} ${catInfo.name}</div>`;
+      factList += '<div style="font-size:13px;font-weight:800;color:' + catInfo.color + ';text-transform:uppercase;margin:12px 0 6px;">' + catInfo.emoji + ' ' + catInfo.name + '</div>';
       catFacts.forEach(f => {
-        factList += `<div style="background:var(--card);border-radius:10px;padding:10px 14px;margin-bottom:6px;font-size:13px;line-height:1.4;">${f.fact}</div>`;
+        factList += '<div style="background:var(--card);border-radius:10px;padding:10px 14px;margin-bottom:6px;font-size:13px;line-height:1.4;">' + f.fact + '</div>';
       });
     });
   }
   document.getElementById('all-facts-list').innerHTML = factList;
+}
+
+// ─── GRADUATION ───────────────────────────────────────────────────────────────
+async function graduateChild() {
+  const currentIdx = GRADE_KEYS.indexOf(activeGrade);
+  if (currentIdx < 0 || currentIdx >= GRADE_KEYS.length - 1) return;
+  const nextGrade = GRADE_KEYS[currentIdx + 1];
+  const nextName = GRADE_NAMES[nextGrade];
+
+  if (!confirm('Graduate ' + activeName + ' to ' + nextName + '? Their fact history will reset so they can start fresh at the new level.')) return;
+
+  try {
+    // Update Firestore
+    const doc = await db.collection('users').doc(activeUserId).get();
+    const children = (doc.data() || {}).children || [];
+    if (children[activeChildIdx]) {
+      children[activeChildIdx].grade = nextGrade;
+      await db.collection('users').doc(activeUserId).update({ children: children });
+    }
+
+    // Update local
+    activeGrade = nextGrade;
+    ACTIVE_FACTS = FACTS[nextGrade] || FACTS['K'];
+
+    // Reset used facts + today so new grade facts flow in fresh
+    STATE.stats.usedFacts = [];
+    STATE.today = null;
+    saveState(STATE);
+    ensureToday();
+
+    renderStats();
+    celebrate('🎓 Level Up!', activeName + ' graduated to ' + nextName + '! New facts await!', '🎓');
+  } catch(e) {
+    console.error('graduateChild error', e);
+    alert('Something went wrong. Please try again.');
+  }
 }
 
 // ═══════════════════════════════════════
@@ -1027,11 +1406,66 @@ function closeCelebration() {
 }
 
 // ═══════════════════════════════════════
-// INIT
+// GAME INIT
 // ═══════════════════════════════════════
-document.addEventListener('DOMContentLoaded', () => {
+function initGame() {
+  STATE = loadState() || defaultState();
   ensureToday();
   renderHome();
+  showScreen('home');
+}
+
+// ─── RELEASE NOTES ────────────────────────────────────────────────────────────
+function showReleaseNotes() {
+  document.getElementById('rn-overlay').classList.add('show');
+}
+function closeReleaseNotes() {
+  document.getElementById('rn-overlay').classList.remove('show');
+}
+
+// ─── FIREBASE AUTH ─────────────────────────────────────────────────────────────
+firebase.auth().onAuthStateChanged(async function(user) {
+  if (!user) {
+    window.location.href = 'index.html';
+    return;
+  }
+  activeUserId = user.uid;
+
+  try {
+    const doc = await db.collection('users').doc(user.uid).get();
+    const data = doc.data() || {};
+    const children = data.children || [];
+
+    if (children.length === 0) {
+      // No children configured — use account username as player name
+      activeName = data.username || 'Friend';
+      activeGrade = 'K';
+      activeChildIdx = 0;
+      ACTIVE_FACTS = FACTS['K'];
+      document.getElementById('screen-loading').classList.remove('active');
+      initGame();
+    } else if (children.length === 1) {
+      activeName = children[0].name || 'Friend';
+      activeGrade = children[0].grade || 'K';
+      activeChildIdx = 0;
+      ACTIVE_FACTS = FACTS[activeGrade] || FACTS['K'];
+      document.getElementById('screen-loading').classList.remove('active');
+      initGame();
+    } else {
+      // Multiple children — show selector
+      renderChildSelect(children);
+      document.getElementById('screen-loading').classList.remove('active');
+      showScreen('child-select');
+    }
+  } catch(e) {
+    console.error('Firebase load error', e);
+    // Fallback — still let the game run
+    activeName = 'Friend';
+    activeGrade = 'K';
+    ACTIVE_FACTS = FACTS['K'];
+    document.getElementById('screen-loading').classList.remove('active');
+    initGame();
+  }
 });
 </script>
 </body>

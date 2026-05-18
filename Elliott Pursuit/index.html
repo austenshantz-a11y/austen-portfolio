@@ -224,6 +224,22 @@
     .modal { background: var(--card); border-radius: var(--radius); padding: 28px; width: 100%; max-width: 380px; box-shadow: 0 8px 32px rgba(0,0,0,.15); animation: fadeIn .2s ease; }
     .modal h3 { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
 
+    /* ABOUT MODAL */
+    .about-modal { background: var(--card); border-radius: var(--radius); padding: 28px 24px 24px; width: 100%; max-width: 420px; max-height: 88vh; overflow-y: auto; box-shadow: 0 8px 40px rgba(0,0,0,.2); animation: fadeIn .25s ease; }
+    .about-hero { text-align: center; margin-bottom: 24px; }
+    .about-hero .logo-icon { width: 72px; height: 72px; font-size: 36px; border-radius: 20px; background: var(--purple); display: inline-flex; align-items: center; justify-content: center; box-shadow: 0 4px 20px rgba(108,78,246,.35); margin-bottom: 12px; }
+    .about-hero h2 { font-size: 22px; font-weight: 900; color: var(--purple); }
+    .about-hero p { font-size: 14px; color: var(--muted); margin-top: 4px; line-height: 1.5; }
+    .about-section { margin-bottom: 20px; }
+    .about-section-title { font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .about-feature { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 12px; }
+    .about-feature .af-icon { font-size: 22px; flex-shrink: 0; width: 36px; height: 36px; background: var(--purple-light); border-radius: 10px; display: flex; align-items: center; justify-content: center; }
+    .about-feature .af-text strong { display: block; font-size: 14px; font-weight: 700; color: var(--text); }
+    .about-feature .af-text span { font-size: 13px; color: var(--muted); line-height: 1.4; }
+    .about-divider { height: 1px; background: var(--border); margin: 20px 0; }
+    .about-cta-note { font-size: 13px; color: var(--muted); text-align: center; line-height: 1.5; margin-bottom: 20px; }
+    .new-badge { display: inline-block; background: var(--yellow); color: #713f12; font-size: 10px; font-weight: 800; padding: 2px 7px; border-radius: 999px; margin-left: 6px; vertical-align: middle; letter-spacing: .03em; }
+
     .scroll-form { max-height: 70vh; overflow-y: auto; padding-right: 4px; }
 
     @media (max-width: 480px) {
@@ -268,6 +284,9 @@
     </div>
     <button class="btn btn-primary mt-4" id="btn-login" onclick="handleLogin()">Sign In</button>
     <button class="btn btn-outline" onclick="showScreen('screen-register')">Create an account</button>
+    <div class="text-center" style="margin-top:18px;">
+      <button class="link" style="color:var(--muted);font-size:13px;" onclick="showAbout()">✨ What is Elliott Pursuit?</button>
+    </div>
   </div>
 </div>
 
@@ -455,6 +474,16 @@
       </select>
       <div class="field-error" id="modal-age-err">Please select an age.</div>
     </div>
+    <div class="field">
+      <label for="modal-child-grade">Grade</label>
+      <select id="modal-child-grade">
+        <option value="preK">Pre-K (Ages 3–4)</option>
+        <option value="K" selected>Kindergarten (Ages 5–6)</option>
+        <option value="grade1">1st Grade (Ages 6–7)</option>
+        <option value="grade2">2nd Grade (Ages 7–8)</option>
+        <option value="grade3">3rd Grade (Ages 8–9)</option>
+      </select>
+    </div>
     <button class="btn btn-primary" id="btn-add-child" onclick="saveModalChild()">Add Child</button>
     <button class="btn btn-outline" onclick="closeAddChildModal()">Cancel</button>
   </div>
@@ -491,6 +520,7 @@
       window.location.href = 'elliott-learning-game.html';
     } else {
       showScreen('screen-login');
+      maybeShowAbout();
     }
   });
 
@@ -619,8 +649,9 @@
     rows.forEach(row => {
       const n = row.querySelector('.child-name').value.trim();
       const a = row.querySelector('.child-age').value;
+      const g = row.querySelector('.child-grade') ? row.querySelector('.child-grade').value : 'K';
       if (!n) childOk = false;
-      else children.push({ name: n, age: parseInt(a) });
+      else children.push({ name: n, age: parseInt(a), grade: g });
     });
     if (!childOk || children.length === 0) { showToast('⚠️ Please enter a name for each child.'); return; }
 
@@ -771,7 +802,8 @@
 
     setBtnLoading('btn-add-child', true);
     try {
-      const newChild    = { name, age: parseInt(age) };
+      const grade       = document.getElementById('modal-child-grade').value || 'K';
+      const newChild    = { name, age: parseInt(age), grade };
       const newProgress = { stars:0, streak:0, correct:0, math:0, words:0, world:0, colors:0 };
       const uid = auth.currentUser.uid;
       await db.collection('users').doc(uid).update({
@@ -838,7 +870,7 @@
     if (e.target === this) closeAddChildModal();
   });
 
-  function addChildRow(name='', age=5) {
+  function addChildRow(name='', age=5, grade='K') {
     const list = document.getElementById('reg-children-list');
     const row  = document.createElement('div');
     row.className = 'child-row';
@@ -847,10 +879,20 @@
         <label>Child's name</label>
         <input type="text" class="child-name" placeholder="e.g. Elliott" value="${name}" />
       </div>
-      <div class="field" style="max-width:100px">
+      <div class="field" style="max-width:80px">
         <label>Age</label>
         <select class="child-age">
           ${[2,3,4,5,6,7,8,9,10].map(a=>`<option${a==age?' selected':''}>${a}</option>`).join('')}
+        </select>
+      </div>
+      <div class="field" style="max-width:110px">
+        <label>Grade</label>
+        <select class="child-grade">
+          <option value="preK"${grade=='preK'?' selected':''}>Pre-K</option>
+          <option value="K"${grade=='K'?' selected':''}>Kinder</option>
+          <option value="grade1"${grade=='grade1'?' selected':''}>1st Grade</option>
+          <option value="grade2"${grade=='grade2'?' selected':''}>2nd Grade</option>
+          <option value="grade3"${grade=='grade3'?' selected':''}>3rd Grade</option>
         </select>
       </div>
       <button class="remove-child" onclick="removeChildRow(this)" title="Remove">✕</button>`;
@@ -862,6 +904,101 @@
     if (list.children.length <= 1) { showToast('⚠️ At least one child is required.'); return; }
     btn.closest('.child-row').remove();
   }
+
+  // ── ABOUT MODAL ────────────────────────────────────────────────────────────
+  function showAbout() {
+    document.getElementById('about-overlay').classList.add('open');
+  }
+  function closeAbout() {
+    document.getElementById('about-overlay').classList.remove('open');
+    localStorage.setItem('ep_visited', '1');
+  }
+
+  // Auto-show for first-time visitors (no prior visit recorded)
+  function maybeShowAbout() {
+    if (!localStorage.getItem('ep_visited')) {
+      setTimeout(showAbout, 600); // slight delay so login screen settles first
+    }
+  }
 </script>
+
+<!-- ABOUT MODAL -->
+<div class="modal-overlay" id="about-overlay" onclick="closeAbout()">
+  <div class="about-modal" onclick="event.stopPropagation()">
+
+    <div class="about-hero">
+      <div class="logo-icon">🎲</div>
+      <h2>Elliott Pursuit</h2>
+      <p>A daily learning game for kids,<br>inspired by Trivial Pursuit.</p>
+    </div>
+
+    <div class="about-section">
+      <div class="about-section-title">How it works</div>
+      <div class="about-feature">
+        <div class="af-icon">📖</div>
+        <div class="af-text">
+          <strong>Learn one fact per category, every day</strong>
+          <span>Six categories unlock each day — Animals, Art, Numbers, Stories, The World, and Music. Tap to read the fact, then mark it learned.</span>
+        </div>
+      </div>
+      <div class="about-feature">
+        <div class="af-icon">🎯</div>
+        <div class="af-text">
+          <strong>Quiz yourself to earn pie slices</strong>
+          <span>After learning, answer a quiz question for each category. Get it right and you earn that slice of your pie.</span>
+        </div>
+      </div>
+      <div class="about-feature">
+        <div class="af-icon">🥧</div>
+        <div class="af-text">
+          <strong>Fill the pie, earn a prize</strong>
+          <span>Collect all 6 slices to complete a full pie. Earn 10 full pies and unlock a real-life reward — you decide what it is!</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-divider"></div>
+
+    <div class="about-section">
+      <div class="about-section-title">Features</div>
+      <div class="about-feature">
+        <div class="af-icon">🎓</div>
+        <div class="af-text">
+          <strong>Grade-level learning <span class="new-badge">NEW</span></strong>
+          <span>Facts are tailored to your child's grade — Pre-K through 3rd Grade — with vocabulary and complexity that grows with them.</span>
+        </div>
+      </div>
+      <div class="about-feature">
+        <div class="af-icon">👨‍👩‍👧</div>
+        <div class="af-text">
+          <strong>One account for the whole family</strong>
+          <span>Add multiple children to a single account. Each child gets their own progress, streak, and facts.</span>
+        </div>
+      </div>
+      <div class="about-feature">
+        <div class="af-icon">🔥</div>
+        <div class="af-text">
+          <strong>Streaks &amp; stats</strong>
+          <span>Track daily streaks, quiz accuracy, a calendar of every day played, and a full list of every fact ever learned.</span>
+        </div>
+      </div>
+      <div class="about-feature">
+        <div class="af-icon">🔀</div>
+        <div class="af-text">
+          <strong>Big Random Quiz</strong>
+          <span>Review everything your child has ever learned in a shuffled quiz — great for a car ride or rainy afternoon.</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="about-divider"></div>
+
+    <p class="about-cta-note">Elliott Pursuit is invite-only. You'll need an invite code from a friend or family member to create an account.</p>
+
+    <button class="btn btn-primary" onclick="closeAbout(); showScreen('screen-register');">Create an account →</button>
+    <button class="btn btn-outline" style="margin-top:10px;" onclick="closeAbout()">I already have an account</button>
+  </div>
+</div>
+
 </body>
 </html>
